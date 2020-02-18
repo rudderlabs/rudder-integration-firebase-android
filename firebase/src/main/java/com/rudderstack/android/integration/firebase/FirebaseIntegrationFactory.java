@@ -1,8 +1,5 @@
-package com.rudderlabs.android.integration.firebase;
+package com.rudderstack.android.integration.firebase;
 
-import android.app.Activity;
-import android.app.Application;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -18,7 +15,6 @@ import com.rudderstack.android.sdk.core.RudderIntegration;
 import com.rudderstack.android.sdk.core.RudderLogger;
 import com.rudderstack.android.sdk.core.RudderMessage;
 import com.rudderstack.android.sdk.core.ecomm.ECommerceEvents;
-import com.rudderstack.android.sdk.core.ecomm.ECommerceParamNames;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +23,6 @@ import java.util.Map;
 public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalytics> {
     private static final String FIREBASE_KEY = "Firebase";
     private static FirebaseAnalytics _firebaseAnalytics;
-    private Activity _currentActivity;
 
     private static final List<String> GOOGLE_RESERVED_KEYWORDS = Arrays.asList(
             "age", "gender", "interest"
@@ -41,6 +36,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     public static Factory FACTORY = new Factory() {
         @Override
         public RudderIntegration<?> create(@Nullable Object settings, @NonNull RudderClient client, @NonNull RudderConfig rudderConfig) {
+            RudderLogger.logDebug("Creating RudderIntegrationFactory");
             return new FirebaseIntegrationFactory(settings, client, rudderConfig);
         }
 
@@ -52,44 +48,8 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
 
     private FirebaseIntegrationFactory(@Nullable Object config, @NonNull RudderClient client, @NonNull RudderConfig rudderConfig) {
         if (client.getApplication() != null) {
+            RudderLogger.logDebug("Initializing Firebase SDK");
             _firebaseAnalytics = FirebaseAnalytics.getInstance(client.getApplication());
-
-            client.getApplication().registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
-                @Override
-                public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
-                    _currentActivity = activity;
-                }
-
-                @Override
-                public void onActivityStarted(@NonNull Activity activity) {
-
-                }
-
-                @Override
-                public void onActivityResumed(@NonNull Activity activity) {
-
-                }
-
-                @Override
-                public void onActivityPaused(@NonNull Activity activity) {
-
-                }
-
-                @Override
-                public void onActivityStopped(@NonNull Activity activity) {
-
-                }
-
-                @Override
-                public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle bundle) {
-
-                }
-
-                @Override
-                public void onActivityDestroyed(@NonNull Activity activity) {
-                    _currentActivity = null;
-                }
-            });
         }
     }
 
@@ -103,17 +63,18 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                     }
                     Map<String, Object> traits = element.getTraits();
                     for (String key : traits.keySet()) {
-                        if (!GOOGLE_RESERVED_KEYWORDS.contains(key.toLowerCase())) {
+                        key = key.toLowerCase().trim().replace(" ", "_");
+                        if (key.length() > 40) {
+                            key = key.substring(0, 40);
+                        }
+                        if (!GOOGLE_RESERVED_KEYWORDS.contains(key)) {
                             RudderLogger.logDebug("Setting userProperties to Firebase");
                             _firebaseAnalytics.setUserProperty(key, new Gson().toJson(traits.get(key)));
                         }
                     }
                     break;
                 case MessageType.SCREEN:
-                    if (_currentActivity != null) {
-                        RudderLogger.logDebug("Setting current screen to " + element.getEventName() + " in Firebase");
-                        _firebaseAnalytics.setCurrentScreen(_currentActivity, element.getEventName(), null);
-                    }
+                    RudderLogger.logInfo("Rudder doesn't support screen calls for Firebase Native SDK mode as screen recording in Firebase works out of the box");
                     break;
                 case MessageType.TRACK:
                     String eventName = element.getEventName();
@@ -189,15 +150,29 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                 params = new Bundle();
                                 this.addCheckoutProperties(params, element.getProperties());
                                 break;
+                            case ECommerceEvents.PRODUCT_CLICKED:
+                                firebaseEvent = FirebaseAnalytics.Event.SELECT_CONTENT;
+                                params = new Bundle();
+                                this.addProductProperties(params, element.getProperties());
+                                params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "product");
+                                break;
+                            case ECommerceEvents.PROMOTION_VIEWED:
+                                firebaseEvent = FirebaseAnalytics.Event.PRESENT_OFFER;
+
+                                break;
                             default:
                                 // log custom event
-                                firebaseEvent = eventName;
+                                firebaseEvent = eventName.toLowerCase().trim().replace(" ", "_");
+                                if (firebaseEvent.length() > 40) {
+                                    firebaseEvent = firebaseEvent.substring(0, 40);
+                                }
                         }
                         if (!TextUtils.isEmpty(firebaseEvent)) {
                             if (params == null) {
                                 params = new Bundle();
                             }
                             this.attachCustomProperties(params, element.getProperties());
+                            RudderLogger.logDebug("Logged \"" + firebaseEvent + "\" to Firebase");
                             _firebaseAnalytics.logEvent(firebaseEvent, params);
                         }
                     }
@@ -256,6 +231,8 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                 }
                 if (properties.containsKey("currency")) {
                     params.putString(FirebaseAnalytics.Param.CURRENCY, (String) properties.get("currency"));
+                } else {
+                    params.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
                 }
                 if (properties.containsKey("order_id")) {
                     params.putString(FirebaseAnalytics.Param.TRANSACTION_ID, (String) properties.get("order_id"));
@@ -299,6 +276,8 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                 }
                 if (properties.containsKey("currency")) {
                     params.putString(FirebaseAnalytics.Param.CURRENCY, (String) properties.get("currency"));
+                } else {
+                    params.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
                 }
             } catch (Exception ex) {
                 RudderLogger.logError(ex);
@@ -321,7 +300,9 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                         } else if (value instanceof Double) {
                             params.putDouble(key, (Double) value);
                         } else if (value instanceof String) {
-                            params.putString(key, String.valueOf(value));
+                            String val = (String) value;
+                            if (val.length() > 100) val = val.substring(0, 100);
+                            params.putString(key, val);
                         } else {
                             params.putString(key, new Gson().toJson(value));
                         }

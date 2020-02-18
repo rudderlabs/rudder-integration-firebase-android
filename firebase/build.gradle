@@ -38,8 +38,7 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-//    compileOnly 'com.rudderstack.android.sdk:core:1.0'
-    compileOnly project(':core')
+    compileOnly 'com.rudderstack.android.sdk:core:1.0'
     compileOnly 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
 

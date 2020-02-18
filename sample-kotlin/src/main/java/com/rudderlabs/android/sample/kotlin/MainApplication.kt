@@ -1,7 +1,7 @@
 package com.rudderlabs.android.sample.kotlin
 
 import android.app.Application
-import com.rudderlabs.android.integration.firebase.FirebaseIntegrationFactory
+import com.rudderstack.android.integration.firebase.FirebaseIntegrationFactory
 import com.rudderstack.android.sdk.core.RudderClient
 import com.rudderstack.android.sdk.core.RudderConfig
 import com.rudderstack.android.sdk.core.RudderLogger
@@ -15,9 +15,9 @@ class MainApplication : Application() {
         super.onCreate()
         rudderClient = RudderClient.getInstance(
             this,
-            BuildConfig.WRITE_KEY,
+            "1TSRSskqa15PG7F89tkwEbl5Td8",
             RudderConfig.Builder()
-                .withEndPointUri(BuildConfig.END_POINT_URL)
+                .withEndPointUri("https://7866cc22.ngrok.io")
                 .withLogLevel(RudderLogger.RudderLogLevel.DEBUG)
                 .withFactory(FirebaseIntegrationFactory.FACTORY)
                 .build()
