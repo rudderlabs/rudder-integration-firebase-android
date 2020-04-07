@@ -1,5 +1,3 @@
-[ ![Download](https://api.bintray.com/packages/rudderstack/rudderstack/firebase/images/download.svg?version=0.1.0-beta.1) ](https://bintray.com/rudderstack/rudderstack/firebase/0.1.0-beta.1/link)
-
 # What is Rudder?
 
 **Short answer:** 
@@ -31,7 +29,7 @@ val rudderClient: RudderClient = RudderClient.getInstance(
     this,
     <WRITE_KEY>,
     RudderConfig.Builder()
-        .withDataPlaneUrl(<END_POINT_URI>)
+        .withDataPlaneUrl(<DATA_PLANE_URL>)
         .withFactory(FirebaseIntegrationFactory.FACTORY)
         .build()
 )
