@@ -20,7 +20,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
-        versionName "0.1.0-beta.1"
+        versionName "0.1.1"
     }
 
     buildTypes {
@@ -38,9 +38,9 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-    compileOnly 'com.rudderstack.android.sdk:core:1.0.1-beta.1'
+    compileOnly 'com.rudderstack.android.sdk:core:1.0.1'
     compileOnly 'com.google.code.gson:gson:2.8.6'
-    implementation 'com.google.firebase:firebase-analytics:17.2.3'
+    implementation 'com.google.firebase:firebase-analytics:17.3.0'
 
     testImplementation 'com.android.support.test:rules:1.0.2'
     testImplementation 'com.android.support.test:runner:1.0.2'

@@ -21,8 +21,8 @@ repositories {
 ```
 3. Add the dependency under ```dependencies```
 ```
-implementation 'com.rudderstack.android.sdk:core:1.0.1-beta.1'
-implementation 'com.rudderstack.android.integration:firebase:0.1.0-beta.1'
+implementation 'com.rudderstack.android.sdk:core:1.0.1'
+implementation 'com.rudderstack.android.integration:firebase:0.1.1'
 ```
 
 ## Initialize ```RudderClient```
@@ -31,7 +31,7 @@ val rudderClient: RudderClient = RudderClient.getInstance(
     this,
     <WRITE_KEY>,
     RudderConfig.Builder()
-        .withEndPointUri(<END_POINT_URI>)
+        .withDataPlaneUrl(<END_POINT_URI>)
         .withFactory(FirebaseIntegrationFactory.FACTORY)
         .build()
 )

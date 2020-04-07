@@ -17,7 +17,7 @@ class MainApplication : Application() {
             this,
             "1TSRSskqa15PG7F89tkwEbl5Td8",
             RudderConfig.Builder()
-                .withEndPointUri("https://7866cc22.ngrok.io")
+                .withDataPlaneUrl("https://7866cc22.ngrok.io")
                 .withLogLevel(RudderLogger.RudderLogLevel.DEBUG)
                 .withFactory(FirebaseIntegrationFactory.FACTORY)
                 .build()
