@@ -62,8 +62,8 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                         _firebaseAnalytics.setUserId(element.getUserId());
                     }
                     Map<String, Object> traits = element.getTraits();
-                    traits.remove("userId"); // userId is already set
                     for (String key : traits.keySet()) {
+                        if(key.equals("userId")) continue; // userId is already set
                         String firebaseKey = key.toLowerCase().trim().replace(" ", "_");
                         if (firebaseKey.length() > 40) {
                             firebaseKey = firebaseKey.substring(0, 40);
