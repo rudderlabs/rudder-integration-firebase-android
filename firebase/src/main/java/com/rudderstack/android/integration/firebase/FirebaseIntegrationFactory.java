@@ -62,14 +62,15 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                         _firebaseAnalytics.setUserId(element.getUserId());
                     }
                     Map<String, Object> traits = element.getTraits();
+                    traits.remove("userId"); // userId is already set
                     for (String key : traits.keySet()) {
-                        key = key.toLowerCase().trim().replace(" ", "_");
-                        if (key.length() > 40) {
-                            key = key.substring(0, 40);
+                        String firebaseKey = key.toLowerCase().trim().replace(" ", "_");
+                        if (firebaseKey.length() > 40) {
+                            firebaseKey = firebaseKey.substring(0, 40);
                         }
-                        if (!GOOGLE_RESERVED_KEYWORDS.contains(key)) {
+                        if (!GOOGLE_RESERVED_KEYWORDS.contains(firebaseKey)) {
                             RudderLogger.logDebug("Setting userProperties to Firebase");
-                            _firebaseAnalytics.setUserProperty(key, new Gson().toJson(traits.get(key)));
+                            _firebaseAnalytics.setUserProperty(firebaseKey, new Gson().toJson(traits.get(key)));
                         }
                     }
                     break;
@@ -170,8 +171,10 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                         if (!TextUtils.isEmpty(firebaseEvent)) {
                             if (params == null) {
                                 params = new Bundle();
+                                this.attachAllCustomProperties(params, element.getProperties());
+                            } else {
+                                this.attachUnreservedCustomProperties(params, element.getProperties());
                             }
-                            this.attachCustomProperties(params, element.getProperties());
                             RudderLogger.logDebug("Logged \"" + firebaseEvent + "\" to Firebase");
                             _firebaseAnalytics.logEvent(firebaseEvent, params);
                         }
@@ -285,26 +288,32 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         }
     }
 
-    private void attachCustomProperties(Bundle params, Map<String, Object> properties) {
+    private void attachUnreservedCustomProperties(Bundle params, Map<String, Object> properties) {
         if (properties != null) {
             for (String key : properties.keySet()) {
                 if (!RESERVED_PARAM_NAMES.contains(key)) {
+                    String firebaseKey = key.toLowerCase().trim().replace(" ", "_");
+                    if (firebaseKey.length() > 40) {
+                        firebaseKey = firebaseKey.substring(0, 40);
+                    }
                     Object value = properties.get(key);
                     if (value != null) {
                         if (value instanceof Boolean) {
-                            params.putBoolean(key, (Boolean) value);
+                            params.putBoolean(firebaseKey, (Boolean) value);
                         } else if (value instanceof Integer) {
-                            params.putInt(key, (Integer) value);
+                            params.putInt(firebaseKey, (Integer) value);
                         } else if (value instanceof Long) {
-                            params.putLong(key, (Long) value);
+                            params.putLong(firebaseKey, (Long) value);
                         } else if (value instanceof Double) {
-                            params.putDouble(key, (Double) value);
+                            params.putDouble(firebaseKey, (Double) value);
                         } else if (value instanceof String) {
                             String val = (String) value;
                             if (val.length() > 100) val = val.substring(0, 100);
-                            params.putString(key, val);
+                            params.putString(firebaseKey, val);
                         } else {
-                            params.putString(key, new Gson().toJson(value));
+                            String val = new Gson().toJson(value);
+                            // if length exceeds 100, don't send the property
+                            if (!(val.length() > 100)) params.putString(firebaseKey, val);
                         }
                     }
                 }
@@ -312,6 +321,36 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         }
     }
 
+    private void attachAllCustomProperties(Bundle params, Map<String, Object> properties) {
+        if (properties != null) {
+            for (String key : properties.keySet()) {
+                String firebaseKey = key.toLowerCase().trim().replace(" ", "_");
+                if (firebaseKey.length() > 40) {
+                    firebaseKey = firebaseKey.substring(0, 40);
+                }
+                Object value = properties.get(key);
+                if (value != null) {
+                    if (value instanceof Boolean) {
+                        params.putBoolean(firebaseKey, (Boolean) value);
+                    } else if (value instanceof Integer) {
+                        params.putInt(firebaseKey, (Integer) value);
+                    } else if (value instanceof Long) {
+                        params.putLong(firebaseKey, (Long) value);
+                    } else if (value instanceof Double) {
+                        params.putDouble(firebaseKey, (Double) value);
+                    } else if (value instanceof String) {
+                        String val = (String) value;
+                        if (val.length() > 100) val = val.substring(0, 100);
+                        params.putString(firebaseKey, val);
+                    } else {
+                        String val = new Gson().toJson(value);
+                        // if length exceeds 100, don't send the property
+                        if (!(val.length() > 100)) params.putString(firebaseKey, val);
+                    }
+                }
+            }
+        }
+    }
     @Override
     public void reset() {
         // Firebase doesn't support reset functionality
