@@ -1,15 +1,15 @@
 # What is Rudder?
 
-**Short answer:** 
+**Short answer:**
 Rudder is an open-source Segment alternative written in Go, built for the enterprise. .
 
-**Long answer:** 
+**Long answer:**
 Rudder is a platform for collecting, storing and routing customer event data to dozens of tools. Rudder is open-source, can run in your cloud environment (AWS, GCP, Azure or even your data-centre) and provides a powerful transformation framework to process your event data on the fly.
 
 Released under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## Getting Started with Firebase Integration of Android SDK
-1. Add [Firebase](https://firebase.google.com) as a destination in the [Dashboard](https://app.rudderlabs.com/)
+1. Add [Firebase](https://firebase.google.com) as a destination in the [Dashboard](https://app.rudderstack.com/)
 
 2. Add these lines to your ```app/build.gradle```
 ```
@@ -19,8 +19,8 @@ repositories {
 ```
 3. Add the dependency under ```dependencies```
 ```
-implementation 'com.rudderstack.android.sdk:core:1.0.1'
-implementation 'com.rudderstack.android.integration:firebase:0.1.1'
+implementation 'com.rudderstack.android.sdk:core:1+'
+implementation 'com.rudderstack.android.integration:firebase:1+'
 ```
 
 ## Initialize ```RudderClient```

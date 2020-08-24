@@ -1,4 +1,4 @@
-package com.rudderlabs.android.sample.kotlin
+package com.rudderstack.android.sample.kotlin
 
 import android.app.Application
 import com.rudderstack.android.integration.firebase.FirebaseIntegrationFactory
