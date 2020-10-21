@@ -47,9 +47,9 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     };
 
     private FirebaseIntegrationFactory(@Nullable Object config, @NonNull RudderClient client, @NonNull RudderConfig rudderConfig) {
-        if (client.getApplication() != null) {
+        if (RudderClient.getApplication() != null) {
             RudderLogger.logDebug("Initializing Firebase SDK");
-            _firebaseAnalytics = FirebaseAnalytics.getInstance(client.getApplication());
+            _firebaseAnalytics = FirebaseAnalytics.getInstance(RudderClient.getApplication());
         }
     }
 
@@ -63,7 +63,9 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                     }
                     Map<String, Object> traits = element.getTraits();
                     for (String key : traits.keySet()) {
-                        if(key.equals("userId")) continue; // userId is already set
+                        if (key.equals("userId")) {
+                            continue; // userId is already set
+                        }
                         String firebaseKey = key.toLowerCase().trim().replace(" ", "_");
                         if (firebaseKey.length() > 40) {
                             firebaseKey = firebaseKey.substring(0, 40);
@@ -79,7 +81,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                     break;
                 case MessageType.TRACK:
                     String eventName = element.getEventName();
-                    if (!TextUtils.isEmpty(eventName)) {
+                    if (eventName != null && !eventName.isEmpty()) {
                         String firebaseEvent;
                         Bundle params = null;
                         switch (eventName) {
@@ -188,19 +190,15 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     }
 
     private void addCheckoutProperties(Bundle params, Map<String, Object> properties) {
-        if (params != null && properties != null) {
-            if (properties.containsKey("step")) {
-                String step = (String) properties.get("step");
-                params.putInt(FirebaseAnalytics.Param.CHECKOUT_STEP, Integer.parseInt(step != null ? step : "0"));
-            }
+        if (params != null && properties != null && properties.containsKey("step")) {
+            String step = (String) properties.get("step");
+            params.putInt(FirebaseAnalytics.Param.CHECKOUT_STEP, Integer.parseInt(step != null ? step : "0"));
         }
     }
 
     private void addProductListProperty(Bundle params, Map<String, Object> properties) {
-        if (params != null && properties != null) {
-            if (properties.containsKey("category")) {
-                params.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, (String) properties.get("category"));
-            }
+        if (params != null && properties != null && properties.containsKey("category")) {
+            params.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, (String) properties.get("category"));
         }
     }
 
@@ -218,10 +216,8 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     }
 
     private void addSearchProperties(Bundle params, Map<String, Object> properties) {
-        if (params != null && properties != null) {
-            if (properties.containsKey("query")) {
-                params.putString(FirebaseAnalytics.Param.SEARCH_TERM, (String) properties.get("query"));
-            }
+        if (params != null && properties != null && properties.containsKey("query")) {
+            params.putString(FirebaseAnalytics.Param.SEARCH_TERM, (String) properties.get("query"));
         }
     }
 
@@ -351,6 +347,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
             }
         }
     }
+
     @Override
     public void reset() {
         // Firebase doesn't support reset functionality
