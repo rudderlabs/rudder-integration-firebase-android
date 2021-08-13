@@ -14,10 +14,17 @@ Questions? Please join our [Slack channel](https://resources.rudderstack.com/joi
 
 1. Add [Firebase](https://firebase.google.com) as a destination in the [RudderStack dashboard](https://app.rudderstack.com/).
 
-2. Add the following lines to your ```app/build.gradle```
+2. Open your project level ```build.gradle``` file, and add the following lines of code:
 ```
-repositories {
-  maven { url "https://dl.bintray.com/rudderstack/rudderstack" }
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }
 ```
 3. Add the following dependencies under ```dependencies```
