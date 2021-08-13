@@ -72,7 +72,8 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                         }
                         if (!GOOGLE_RESERVED_KEYWORDS.contains(firebaseKey)) {
                             RudderLogger.logDebug("Setting userProperties to Firebase");
-                            _firebaseAnalytics.setUserProperty(firebaseKey, new Gson().toJson(traits.get(key)));
+                            String userProperty = new Gson().toJson(traits.get(key)).replaceAll("\"","");
+                            _firebaseAnalytics.setUserProperty(firebaseKey, userProperty);
                         }
                     }
                     break;
