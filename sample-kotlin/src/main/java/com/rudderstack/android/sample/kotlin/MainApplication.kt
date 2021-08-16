@@ -15,11 +15,12 @@ class MainApplication : Application() {
         super.onCreate()
         rudderClient = RudderClient.getInstance(
             this,
-            "1TSRSskqa15PG7F89tkwEbl5Td8",
+            "1pTxG1Tqxr7FCrqIy7j0p28AENV",
             RudderConfig.Builder()
-                .withDataPlaneUrl("https://9d56fa39376f.ngrok.io")
-                .withControlPlaneUrl("https://9d56fa39376f.ngrok.io")
-                .withLogLevel(RudderLogger.RudderLogLevel.DEBUG)
+                .withDataPlaneUrl("https://896a5e9ecfd6.ngrok.io")
+                .withRecordScreenViews(false)
+                .withTrackLifecycleEvents(false)
+                .withLogLevel(RudderLogger.RudderLogLevel.VERBOSE)
                 .withFactory(FirebaseIntegrationFactory.FACTORY)
                 .build()
         )
