@@ -61,7 +61,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                         RudderLogger.logDebug("Setting userId to Firebase");
                         _firebaseAnalytics.setUserId(element.getUserId());
                     }
-                    Map<String, Object> traits = element.getTraits();
+                    Map<String, String> traits = Utils.transformUserTraits(element.getTraits());
                     for (String key : traits.keySet()) {
                         if (key.equals("userId")) {
                             continue; // userId is already set
@@ -72,7 +72,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                         }
                         if (!GOOGLE_RESERVED_KEYWORDS.contains(firebaseKey)) {
                             RudderLogger.logDebug("Setting userProperties to Firebase");
-                            _firebaseAnalytics.setUserProperty(firebaseKey, new Gson().toJson(traits.get(key)));
+                            _firebaseAnalytics.setUserProperty(firebaseKey, traits.get(key));
                         }
                     }
                     break;
