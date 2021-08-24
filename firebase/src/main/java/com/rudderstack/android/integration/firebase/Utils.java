@@ -22,22 +22,37 @@ public class Utils {
     }
 
     static String getString(Object object) {
-        if (object instanceof Byte || object instanceof Short || object instanceof Integer || object instanceof Long || object instanceof Float || object instanceof Double || object instanceof Boolean || object instanceof Character) {
-            return object.toString();
+        if (object == null) {
+            return null;
         }
-        if (object instanceof String) {
-            return (String) object;
+        switch (getType(object)) {
+            case "Byte":
+            case "Short":
+            case "Integer":
+            case "Long":
+            case "Float":
+            case "Double":
+            case "Boolean":
+            case "Character":
+            case "ArrayList":
+            case "HashMap":
+                return object.toString();
+            case "String":
+                return (String) object;
+            case "LinkedTreeMap":
+                return getStringFromLinkedTreeMap((LinkedTreeMap<String, Object>) object);
+            case "Array":
+                return new Gson().toJson(object);
+            default:
+                return null;
         }
-        if (object instanceof ArrayList || object instanceof HashMap) {
-            return object.toString();
-        }
-        if (object instanceof LinkedTreeMap) {
-            return getStringFromLinkedTreeMap((LinkedTreeMap<String, Object>) object);
-        }
+    }
+
+    static String getType(Object object) {
         if (object.getClass().isArray()) {
-            return new Gson().toJson(object);
+            return "Array";
         }
-        return null;
+        return object.getClass().getSimpleName();
     }
 
     static String getStringFromLinkedTreeMap(LinkedTreeMap<String, Object> linkedTreeMap) {

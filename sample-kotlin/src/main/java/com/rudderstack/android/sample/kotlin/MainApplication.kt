@@ -15,7 +15,7 @@ class MainApplication : Application() {
         super.onCreate()
         rudderClient = RudderClient.getInstance(
             this,
-            "1pTxG1Tqxr7FCrqIy7j0p28AENV",
+            "1xAkuGRTPWQDOB70k9H5O9Vy2Jj",
             RudderConfig.Builder()
                 .withDataPlaneUrl("https://896a5e9ecfd6.ngrok.io")
                 .withRecordScreenViews(false)
