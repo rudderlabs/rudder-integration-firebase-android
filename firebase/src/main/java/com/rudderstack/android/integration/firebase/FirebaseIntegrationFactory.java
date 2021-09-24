@@ -241,11 +241,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                 }
                 if (properties.containsKey("tax")) {
                     String tax = (String) properties.get("tax");
-                    params.putFloat(FirebaseAnalytics.Param.TAX, Float.parseFloat(tax != null ? tax : "0"));
+                    params.putFloat(FirebaseAnalytics.Param.TAX, Utils.getFloat(tax));
                 }
                 if (properties.containsKey("shipping")) {
                     String shipping = (String) properties.get("shipping");
-                    params.putFloat(FirebaseAnalytics.Param.SHIPPING, Float.parseFloat(shipping != null ? shipping : "0"));
+                    params.putFloat(FirebaseAnalytics.Param.SHIPPING, Utils.getFloat(shipping));
                 }
                 if (properties.containsKey("coupon")) {
                     params.putString(FirebaseAnalytics.Param.COUPON, (String) properties.get("coupon"));
