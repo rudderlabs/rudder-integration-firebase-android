@@ -30,7 +30,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
 
     private static final List<String> RESERVED_PARAM_NAMES = Arrays.asList(
             "product_id", "name", "category", "quantity", "price", "currency",
-            "value", "order_id", "tax", "shipping", "coupon"
+            "value", "revenue", "total", "order_id", "tax", "shipping", "coupon"
     );
 
     public static Factory FACTORY = new Factory() {
@@ -224,9 +224,12 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     private void addOrderProperties(Bundle params, Map<String, Object> properties) {
         if (params != null && properties != null) {
             try {
-                if (properties.containsKey("value")) {
-                    String value = (String) properties.get("value");
-                    params.putFloat(FirebaseAnalytics.Param.VALUE, Float.parseFloat(value != null ? value : "0"));
+                if (properties.containsKey("revenue")) {
+                    params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("revenue")));
+                } else if (properties.containsKey("value")) {
+                    params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("value")));
+                } else if (properties.containsKey("total")) {
+                    params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("total")));
                 }
                 if (properties.containsKey("currency")) {
                     params.putString(FirebaseAnalytics.Param.CURRENCY, (String) properties.get("currency"));
