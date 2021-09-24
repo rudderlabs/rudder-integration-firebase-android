@@ -57,6 +57,9 @@ public class Utils {
     }
 
     static float getFloat(Object value) {
+        if (value == null) {
+            return 0;
+        }
         if (value instanceof Float) {
             return (float) value;
         }
