@@ -224,11 +224,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     private void addOrderProperties(Bundle params, Map<String, Object> properties) {
         if (params != null && properties != null) {
             try {
-                if (properties.containsKey("revenue")) {
+                if ( properties.containsKey("revenue")  && Utils.isCompatibleWithFloat(properties.get("revenue")) ) {
                     params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("revenue")));
-                } else if (properties.containsKey("value")) {
+                } else if ( properties.containsKey("value")  && Utils.isCompatibleWithFloat(properties.get("value")) ) {
                     params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("value")));
-                } else if (properties.containsKey("total")) {
+                } else if ( properties.containsKey("total")  && Utils.isCompatibleWithFloat(properties.get("total")) ) {
                     params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("total")));
                 }
                 if (properties.containsKey("currency")) {
@@ -239,13 +239,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                 if (properties.containsKey("order_id")) {
                     params.putString(FirebaseAnalytics.Param.TRANSACTION_ID, (String) properties.get("order_id"));
                 }
-                if (properties.containsKey("tax")) {
-                    String tax = (String) properties.get("tax");
-                    params.putFloat(FirebaseAnalytics.Param.TAX, Utils.getFloat(tax));
+                if ( properties.containsKey("tax") && Utils.isCompatibleWithFloat(properties.get("tax")) ) {
+                    params.putFloat(FirebaseAnalytics.Param.TAX, Utils.getFloat(properties.get("tax")));
                 }
-                if (properties.containsKey("shipping")) {
-                    String shipping = (String) properties.get("shipping");
-                    params.putFloat(FirebaseAnalytics.Param.SHIPPING, Utils.getFloat(shipping));
+                if ( properties.containsKey("shipping") && Utils.isCompatibleWithFloat(properties.get("shipping")) ) {
+                    params.putFloat(FirebaseAnalytics.Param.SHIPPING, Utils.getFloat(properties.get("shipping")));
                 }
                 if (properties.containsKey("coupon")) {
                     params.putString(FirebaseAnalytics.Param.COUPON, (String) properties.get("coupon"));

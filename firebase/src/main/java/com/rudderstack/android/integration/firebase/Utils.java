@@ -56,16 +56,29 @@ public class Utils {
         return object.getClass().getSimpleName();
     }
 
+    static boolean isCompatibleWithFloat(Object value) {
+        if (value == null || value instanceof Number) {
+            return true;
+        }
+        if (value instanceof String) {
+            try {
+                Float.parseFloat((String) value);
+                return true;
+            } catch (NumberFormatException ignored) {
+                return false;
+            }
+        }
+        return false;
+    }
+
     static float getFloat(Object value) {
         if (value == null) {
             return 0;
         }
-        if (value instanceof Float) {
-            return (float) value;
-        }
         if (value instanceof Number) {
             return ((Number) value).floatValue();
-        } else if (value instanceof String) {
+        }
+        if (value instanceof String) {
             try {
                 return Float.parseFloat((String) value);
             } catch (NumberFormatException ignored) {
