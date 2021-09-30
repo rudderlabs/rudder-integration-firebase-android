@@ -30,7 +30,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
 
     private static final List<String> RESERVED_PARAM_NAMES = Arrays.asList(
             "product_id", "name", "category", "quantity", "price", "currency",
-            "value", "order_id", "tax", "shipping", "coupon"
+            "value", "revenue", "total", "order_id", "tax", "shipping", "coupon"
     );
 
     public static Factory FACTORY = new Factory() {
@@ -224,9 +224,12 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     private void addOrderProperties(Bundle params, Map<String, Object> properties) {
         if (params != null && properties != null) {
             try {
-                if (properties.containsKey("value")) {
-                    String value = (String) properties.get("value");
-                    params.putFloat(FirebaseAnalytics.Param.VALUE, Float.parseFloat(value != null ? value : "0"));
+                if ( properties.containsKey("revenue")  && Utils.isCompatibleWithFloat(properties.get("revenue")) ) {
+                    params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("revenue")));
+                } else if ( properties.containsKey("value")  && Utils.isCompatibleWithFloat(properties.get("value")) ) {
+                    params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("value")));
+                } else if ( properties.containsKey("total")  && Utils.isCompatibleWithFloat(properties.get("total")) ) {
+                    params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("total")));
                 }
                 if (properties.containsKey("currency")) {
                     params.putString(FirebaseAnalytics.Param.CURRENCY, (String) properties.get("currency"));
@@ -236,13 +239,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                 if (properties.containsKey("order_id")) {
                     params.putString(FirebaseAnalytics.Param.TRANSACTION_ID, (String) properties.get("order_id"));
                 }
-                if (properties.containsKey("tax")) {
-                    String tax = (String) properties.get("tax");
-                    params.putFloat(FirebaseAnalytics.Param.TAX, Float.parseFloat(tax != null ? tax : "0"));
+                if ( properties.containsKey("tax") && Utils.isCompatibleWithFloat(properties.get("tax")) ) {
+                    params.putFloat(FirebaseAnalytics.Param.TAX, Utils.getFloat(properties.get("tax")));
                 }
-                if (properties.containsKey("shipping")) {
-                    String shipping = (String) properties.get("shipping");
-                    params.putFloat(FirebaseAnalytics.Param.SHIPPING, Float.parseFloat(shipping != null ? shipping : "0"));
+                if ( properties.containsKey("shipping") && Utils.isCompatibleWithFloat(properties.get("shipping")) ) {
+                    params.putFloat(FirebaseAnalytics.Param.SHIPPING, Utils.getFloat(properties.get("shipping")));
                 }
                 if (properties.containsKey("coupon")) {
                     params.putString(FirebaseAnalytics.Param.COUPON, (String) properties.get("coupon"));

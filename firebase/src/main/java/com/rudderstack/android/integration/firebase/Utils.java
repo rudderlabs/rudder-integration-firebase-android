@@ -2,6 +2,7 @@ package com.rudderstack.android.integration.firebase;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
+import com.rudderstack.android.sdk.core.RudderLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +54,39 @@ public class Utils {
             return "Array";
         }
         return object.getClass().getSimpleName();
+    }
+
+    static boolean isCompatibleWithFloat(Object value) {
+        if (value == null || value instanceof Number) {
+            return true;
+        }
+        if (value instanceof String) {
+            try {
+                Float.parseFloat((String) value);
+                return true;
+            } catch (NumberFormatException ignored) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    static float getFloat(Object value) {
+        if (value == null) {
+            return 0;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).floatValue();
+        }
+        if (value instanceof String) {
+            try {
+                return Float.parseFloat((String) value);
+            } catch (NumberFormatException ignored) {
+                RudderLogger.logDebug("Unable to convert the value: " + value +
+                        " to Float, using the defaultValue: " + (float) 0);
+            }
+        }
+        return (float) 0;
     }
 
     static String getStringFromLinkedTreeMap(LinkedTreeMap<String, Object> linkedTreeMap) {

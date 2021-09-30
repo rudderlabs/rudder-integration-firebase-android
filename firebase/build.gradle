@@ -8,7 +8,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 30
         versionCode 1
-        versionName "1.0.2"
+        versionName "1.0.3"
     }
 
     buildTypes {
@@ -22,7 +22,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-    compileOnly 'com.rudderstack.android.sdk:core:1.+'
+    compileOnly 'com.rudderstack.android.sdk:core:1.0.18'
     compileOnly 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.firebase:firebase-analytics:17.6.0'
 
