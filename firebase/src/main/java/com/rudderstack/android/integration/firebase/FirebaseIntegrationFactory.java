@@ -110,11 +110,17 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                 firebaseEvent = FirebaseAnalytics.Event.ECOMMERCE_PURCHASE;
                                 params = new Bundle();
                                 this.addOrderProperties(params, element.getProperties());
+                                if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
+                                    this.addProductProperties(params, (Map<String, Object>) element.getProperties().get("products"));
+                                }
                                 break;
                             case ECommerceEvents.ORDER_REFUNDED:
                                 firebaseEvent = FirebaseAnalytics.Event.PURCHASE_REFUND;
                                 params = new Bundle();
                                 this.addOrderProperties(params, element.getProperties());
+                                if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
+                                    this.addProductProperties(params, (Map<String, Object>) element.getProperties().get("products"));
+                                }
                                 break;
                             case ECommerceEvents.PRODUCTS_SEARCHED:
                                 firebaseEvent = FirebaseAnalytics.Event.SEARCH;
@@ -142,6 +148,9 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                 firebaseEvent = FirebaseAnalytics.Event.VIEW_ITEM_LIST;
                                 params = new Bundle();
                                 this.addProductListProperty(params, element.getProperties());
+                                if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
+                                    this.addProductProperties(params, (Map<String, Object>) element.getProperties().get("products"));
+                                }
                                 break;
                             case ECommerceEvents.PRODUCT_REMOVED:
                                 firebaseEvent = FirebaseAnalytics.Event.REMOVE_FROM_CART;
@@ -267,12 +276,10 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                     params.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, (String) properties.get("category"));
                 }
                 if (properties.containsKey("quantity")) {
-                    String quantity = (String) properties.get("quantity");
-                    params.putLong(FirebaseAnalytics.Param.QUANTITY, Long.parseLong(quantity != null ? quantity : "0"));
+                    params.putLong(FirebaseAnalytics.Param.QUANTITY, Utils.getLong(properties.get("quantity")));
                 }
                 if (properties.containsKey("price")) {
-                    String price = (String) properties.get("price");
-                    params.putLong(FirebaseAnalytics.Param.PRICE, Long.parseLong(price != null ? price : "0"));
+                    params.putLong(FirebaseAnalytics.Param.PRICE, Utils.getLong(properties.get("price")));
                 }
                 if (properties.containsKey("currency")) {
                     params.putString(FirebaseAnalytics.Param.CURRENCY, (String) properties.get("currency"));
