@@ -89,6 +89,24 @@ public class Utils {
         return (float) 0;
     }
 
+    static long getLong(Object value) {
+        if (value == null) {
+            return 0;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+        if (value instanceof String) {
+            try {
+                return Long.parseLong((String) value);
+            } catch (NumberFormatException ignored) {
+                RudderLogger.logDebug("Unable to convert the value: " + value +
+                        " to Long, using the defaultValue: " + (long) 0);
+            }
+        }
+        return 0;
+    }
+
     static String getStringFromLinkedTreeMap(LinkedTreeMap<String, Object> linkedTreeMap) {
         if (linkedTreeMap.containsKey("values")) {
             ArrayList<Object> arrayList = new ArrayList<>();
@@ -102,5 +120,9 @@ public class Utils {
             return linkedTreeMap.get("nameValuePairs").toString();
         }
         return linkedTreeMap.toString();
+    }
+
+    public static boolean isEmpty(Map<String, Object> properties) {
+        return (properties == null || properties.size() == 0);
     }
 }
