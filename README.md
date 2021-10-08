@@ -30,7 +30,7 @@ allprojects {
 3. Add the following dependencies under ```dependencies```
 ```
 implementation 'com.rudderstack.android.sdk:core:1+'
-implementation 'com.rudderstack.android.integration:firebase:1+'
+implementation 'com.rudderstack.android.integration:firebase:1.0.4'
 ```
 
 ## Initializing ```RudderClient```
