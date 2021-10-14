@@ -18,6 +18,7 @@ import com.rudderstack.android.sdk.core.ecomm.ECommerceEvents;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -112,13 +113,13 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                 params = new Bundle();
                                 this.addOrderProperties(params, element.getProperties());
                                 if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
-                                    Object products = (Map<String, Object>) element.getProperties().get("products");
+                                    Object products = element.getProperties().get("products");
                                     if (products instanceof ArrayList) {
                                         ArrayList<Map<String, Object>> productArr = (ArrayList<Map<String, Object>>) products;
                                         for (int index = 0; index < productArr.size(); index++) {
                                             this.addProductProperties(params, productArr.get(index));
                                         }
-                                    } else {
+                                    } else if (products instanceof Map) {
                                         this.addProductProperties(params, (Map<String, Object>) products);
                                     }
                                 }
@@ -128,13 +129,13 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                 params = new Bundle();
                                 this.addOrderProperties(params, element.getProperties());
                                 if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
-                                    Object products = (Map<String, Object>) element.getProperties().get("products");
+                                    Object products = element.getProperties().get("products");
                                     if (products instanceof ArrayList) {
                                         ArrayList<Map<String, Object>> productArr = (ArrayList<Map<String, Object>>) products;
                                         for (int index = 0; index < productArr.size(); index++) {
                                             this.addProductProperties(params, productArr.get(index));
                                         }
-                                    } else {
+                                    } else if (products instanceof Map) {
                                         this.addProductProperties(params, (Map<String, Object>) products);
                                     }
                                 }
@@ -166,13 +167,13 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                 params = new Bundle();
                                 this.addProductListProperty(params, element.getProperties());
                                 if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
-                                    Object products = (Map<String, Object>) element.getProperties().get("products");
+                                    Object products = element.getProperties().get("products");
                                     if (products instanceof ArrayList) {
                                         ArrayList<Map<String, Object>> productArr = (ArrayList<Map<String, Object>>) products;
                                         for (int index = 0; index < productArr.size(); index++) {
                                             this.addProductProperties(params, productArr.get(index));
                                         }
-                                    } else {
+                                    } else if (products instanceof Map) {
                                         this.addProductProperties(params, (Map<String, Object>) products);
                                     }
                                 }
