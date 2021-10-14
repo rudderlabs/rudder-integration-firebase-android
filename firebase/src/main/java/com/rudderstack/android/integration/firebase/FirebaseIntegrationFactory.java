@@ -16,7 +16,9 @@ import com.rudderstack.android.sdk.core.RudderLogger;
 import com.rudderstack.android.sdk.core.RudderMessage;
 import com.rudderstack.android.sdk.core.ecomm.ECommerceEvents;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -111,7 +113,15 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                 params = new Bundle();
                                 this.addOrderProperties(params, element.getProperties());
                                 if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
-                                    this.addProductProperties(params, (Map<String, Object>) element.getProperties().get("products"));
+                                    Object products = element.getProperties().get("products");
+                                    if (products instanceof ArrayList) {
+                                        ArrayList<Map<String, Object>> productArr = (ArrayList<Map<String, Object>>) products;
+                                        for (int index = 0; index < productArr.size(); index++) {
+                                            this.addProductProperties(params, productArr.get(index));
+                                        }
+                                    } else if (products instanceof Map) {
+                                        this.addProductProperties(params, (Map<String, Object>) products);
+                                    }
                                 }
                                 break;
                             case ECommerceEvents.ORDER_REFUNDED:
@@ -119,7 +129,15 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                 params = new Bundle();
                                 this.addOrderProperties(params, element.getProperties());
                                 if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
-                                    this.addProductProperties(params, (Map<String, Object>) element.getProperties().get("products"));
+                                    Object products = element.getProperties().get("products");
+                                    if (products instanceof ArrayList) {
+                                        ArrayList<Map<String, Object>> productArr = (ArrayList<Map<String, Object>>) products;
+                                        for (int index = 0; index < productArr.size(); index++) {
+                                            this.addProductProperties(params, productArr.get(index));
+                                        }
+                                    } else if (products instanceof Map) {
+                                        this.addProductProperties(params, (Map<String, Object>) products);
+                                    }
                                 }
                                 break;
                             case ECommerceEvents.PRODUCTS_SEARCHED:
@@ -149,7 +167,15 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                 params = new Bundle();
                                 this.addProductListProperty(params, element.getProperties());
                                 if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
-                                    this.addProductProperties(params, (Map<String, Object>) element.getProperties().get("products"));
+                                    Object products = element.getProperties().get("products");
+                                    if (products instanceof ArrayList) {
+                                        ArrayList<Map<String, Object>> productArr = (ArrayList<Map<String, Object>>) products;
+                                        for (int index = 0; index < productArr.size(); index++) {
+                                            this.addProductProperties(params, productArr.get(index));
+                                        }
+                                    } else if (products instanceof Map) {
+                                        this.addProductProperties(params, (Map<String, Object>) products);
+                                    }
                                 }
                                 break;
                             case ECommerceEvents.PRODUCT_REMOVED:
@@ -233,11 +259,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     private void addOrderProperties(Bundle params, Map<String, Object> properties) {
         if (params != null && properties != null) {
             try {
-                if ( properties.containsKey("revenue")  && Utils.isCompatibleWithFloat(properties.get("revenue")) ) {
+                if (properties.containsKey("revenue") && Utils.isCompatibleWithFloat(properties.get("revenue"))) {
                     params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("revenue")));
-                } else if ( properties.containsKey("value")  && Utils.isCompatibleWithFloat(properties.get("value")) ) {
+                } else if (properties.containsKey("value") && Utils.isCompatibleWithFloat(properties.get("value"))) {
                     params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("value")));
-                } else if ( properties.containsKey("total")  && Utils.isCompatibleWithFloat(properties.get("total")) ) {
+                } else if (properties.containsKey("total") && Utils.isCompatibleWithFloat(properties.get("total"))) {
                     params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("total")));
                 }
                 if (properties.containsKey("currency")) {
@@ -248,10 +274,10 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                 if (properties.containsKey("order_id")) {
                     params.putString(FirebaseAnalytics.Param.TRANSACTION_ID, (String) properties.get("order_id"));
                 }
-                if ( properties.containsKey("tax") && Utils.isCompatibleWithFloat(properties.get("tax")) ) {
+                if (properties.containsKey("tax") && Utils.isCompatibleWithFloat(properties.get("tax"))) {
                     params.putFloat(FirebaseAnalytics.Param.TAX, Utils.getFloat(properties.get("tax")));
                 }
-                if ( properties.containsKey("shipping") && Utils.isCompatibleWithFloat(properties.get("shipping")) ) {
+                if (properties.containsKey("shipping") && Utils.isCompatibleWithFloat(properties.get("shipping"))) {
                     params.putFloat(FirebaseAnalytics.Param.SHIPPING, Utils.getFloat(properties.get("shipping")));
                 }
                 if (properties.containsKey("coupon")) {
