@@ -17,7 +17,8 @@ class MainApplication : Application() {
             this,
             "1xAkuGRTPWQDOB70k9H5O9Vy2Jj",
             RudderConfig.Builder()
-                .withDataPlaneUrl("https://896a5e9ecfd6.ngrok.io")
+                .withDataPlaneUrl("https://1327-103-77-46-123.ngrok.io")
+                .withControlPlaneUrl("https://1327-103-77-46-123.ngrok.io")
                 .withRecordScreenViews(false)
                 .withTrackLifecycleEvents(false)
                 .withLogLevel(RudderLogger.RudderLogLevel.VERBOSE)

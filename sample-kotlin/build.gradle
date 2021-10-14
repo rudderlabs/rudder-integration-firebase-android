@@ -21,7 +21,7 @@ localProperties.load(project.rootProject.file('local.properties').newDataInputSt
 android {
     compileSdkVersion 30
     defaultConfig {
-        applicationId "com.rudderstack.android.sample.kotlin"
+        applicationId "com.rudderstack.integration.test.firebase.android"
         minSdkVersion 16
         targetSdkVersion 30
         versionCode 1
