@@ -71,41 +71,60 @@ public class Utils {
         return false;
     }
 
-    static float getFloat(Object value) {
+//    static float getFloat(Object value) {
+//        if (value == null) {
+//            return 0;
+//        }
+//        if (value instanceof Number) {
+//            return ((Number) value).floatValue();
+//        }
+//        if (value instanceof String) {
+//            try {
+//                return Float.parseFloat((String) value);
+//            } catch (NumberFormatException ignored) {
+//                RudderLogger.logDebug("Unable to convert the value: " + value +
+//                        " to Float, using the defaultValue: " + (float) 0);
+//            }
+//        }
+//        return (float) 0;
+//    }
+
+    static double getDouble(Object value) {
         if (value == null) {
             return 0;
         }
         if (value instanceof Number) {
-            return ((Number) value).floatValue();
+            return ((Number) value).doubleValue();
         }
         if (value instanceof String) {
             try {
-                return Float.parseFloat((String) value);
+                return Double.parseDouble((String) value);
+//                return Float.parseFloat((String) value);
             } catch (NumberFormatException ignored) {
                 RudderLogger.logDebug("Unable to convert the value: " + value +
-                        " to Float, using the defaultValue: " + (float) 0);
+                        " to Double, using the defaultValue: " + (double) 0);
             }
         }
-        return (float) 0;
+        return (double) 0;
     }
 
-    static long getLong(Object value) {
-        if (value == null) {
-            return 0;
-        }
-        if (value instanceof Number) {
-            return ((Number) value).longValue();
-        }
-        if (value instanceof String) {
-            try {
-                return Long.parseLong((String) value);
-            } catch (NumberFormatException ignored) {
-                RudderLogger.logDebug("Unable to convert the value: " + value +
-                        " to Long, using the defaultValue: " + (long) 0);
-            }
-        }
-        return 0;
-    }
+//    static long getLong(Object value) {
+//        if (value == null) {
+//            return 0;
+//        }
+//        if (value instanceof Number) {
+//            return ((Number) value).longValue();
+//        }
+//        if (value instanceof String) {
+//            try {
+//                return Long.parseLong((String) value);
+//            } catch (NumberFormatException ignored) {
+//                RudderLogger.logDebug("Unable to convert the value: " + value +
+//                        " to Long, using the defaultValue: " + (long) 0);
+//            }
+//        }
+//        return 0;
+//    }
 
     static String getStringFromLinkedTreeMap(LinkedTreeMap<String, Object> linkedTreeMap) {
         if (linkedTreeMap.containsKey("values")) {
