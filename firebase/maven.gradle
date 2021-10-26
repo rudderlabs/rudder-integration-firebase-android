@@ -16,7 +16,7 @@ signing {
 
 group = 'com.rudderstack.android.integration'
 archivesBaseName = 'firebase'
-version = '1.0.5'
+version = '1.0.6'
 
 File secretPropsFile = project.rootProject.file('local.properties')
 if (secretPropsFile.exists()) {
