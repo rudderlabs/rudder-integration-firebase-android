@@ -72,7 +72,6 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
             put(ECommerceEvents.PAYMENT_INFO_ENTERED, FirebaseAnalytics.Event.ADD_PAYMENT_INFO);
             put(ECommerceEvents.PRODUCT_ADDED, FirebaseAnalytics.Event.ADD_TO_CART);
             put(ECommerceEvents.PRODUCT_ADDED_TO_WISH_LIST, FirebaseAnalytics.Event.ADD_TO_WISHLIST);
-            put("Application Opened", FirebaseAnalytics.Event.APP_OPEN);
             put(ECommerceEvents.CHECKOUT_STARTED, FirebaseAnalytics.Event.BEGIN_CHECKOUT);
             put(ECommerceEvents.ORDER_COMPLETED, FirebaseAnalytics.Event.PURCHASE);
             put(ECommerceEvents.ORDER_REFUNDED, FirebaseAnalytics.Event.REFUND);
@@ -175,8 +174,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                         String firebaseEvent;
                         properties = element.getProperties();
                         params = new Bundle();
+                        if (eventName.equals("Application Opened")) {
+                            firebaseEvent = FirebaseAnalytics.Event.APP_OPEN;
+                        }
                         // Handle E-Commerce event
-                        if (EVENTS_MAPPING.containsKey(eventName)) {
+                        else if (EVENTS_MAPPING.containsKey(eventName)) {
                             firebaseEvent = EVENTS_MAPPING.get(eventName);
                             if (!Utils.isEmpty(firebaseEvent) && !Utils.isEmpty(properties)) {
                                 if (firebaseEvent.equals(FirebaseAnalytics.Event.SHARE)) {
