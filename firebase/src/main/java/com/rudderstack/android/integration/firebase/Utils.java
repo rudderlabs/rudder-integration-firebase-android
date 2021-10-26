@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.rudderstack.android.sdk.core.RudderLogger;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,13 +58,13 @@ public class Utils {
         return object.getClass().getSimpleName();
     }
 
-    static boolean isCompatibleWithFloat(Object value) {
+    static boolean isCompatibleWithDouble(Object value) {
         if (value == null || value instanceof Number) {
             return true;
         }
         if (value instanceof String) {
             try {
-                Float.parseFloat((String) value);
+                Double.parseDouble((String) value);
                 return true;
             } catch (NumberFormatException ignored) {
                 return false;
@@ -70,24 +72,6 @@ public class Utils {
         }
         return false;
     }
-
-//    static float getFloat(Object value) {
-//        if (value == null) {
-//            return 0;
-//        }
-//        if (value instanceof Number) {
-//            return ((Number) value).floatValue();
-//        }
-//        if (value instanceof String) {
-//            try {
-//                return Float.parseFloat((String) value);
-//            } catch (NumberFormatException ignored) {
-//                RudderLogger.logDebug("Unable to convert the value: " + value +
-//                        " to Float, using the defaultValue: " + (float) 0);
-//            }
-//        }
-//        return (float) 0;
-//    }
 
     static double getDouble(Object value) {
         if (value == null) {
@@ -99,32 +83,31 @@ public class Utils {
         if (value instanceof String) {
             try {
                 return Double.parseDouble((String) value);
-//                return Float.parseFloat((String) value);
             } catch (NumberFormatException ignored) {
                 RudderLogger.logDebug("Unable to convert the value: " + value +
                         " to Double, using the defaultValue: " + (double) 0);
             }
         }
-        return (double) 0;
+        return 0;
     }
 
-//    static long getLong(Object value) {
-//        if (value == null) {
-//            return 0;
-//        }
-//        if (value instanceof Number) {
-//            return ((Number) value).longValue();
-//        }
-//        if (value instanceof String) {
-//            try {
-//                return Long.parseLong((String) value);
-//            } catch (NumberFormatException ignored) {
-//                RudderLogger.logDebug("Unable to convert the value: " + value +
-//                        " to Long, using the defaultValue: " + (long) 0);
-//            }
-//        }
-//        return 0;
-//    }
+    static long getLong(Object value) {
+        if (value == null) {
+            return 0;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+        if (value instanceof String) {
+            try {
+                return Long.parseLong((String) value);
+            } catch (NumberFormatException ignored) {
+                RudderLogger.logDebug("Unable to convert the value: " + value +
+                        " to Long, using the defaultValue: " + (long) 0);
+            }
+        }
+        return 0;
+    }
 
     static String getStringFromLinkedTreeMap(LinkedTreeMap<String, Object> linkedTreeMap) {
         if (linkedTreeMap.containsKey("values")) {
@@ -141,7 +124,19 @@ public class Utils {
         return linkedTreeMap.toString();
     }
 
-    public static boolean isEmpty(Map<String, Object> properties) {
-        return (properties == null || properties.size() == 0);
+    public static boolean isEmpty(Object value) {
+        if(value == null){
+            return true;
+        }
+        if (value instanceof JSONArray) {
+            return (((JSONArray) value).length() == 0);
+        }
+        if (value instanceof Map) {
+            return ((Map<?, ?>) value).size() == 0;
+        }
+        if (value instanceof String) {
+            return (((String) value).trim().isEmpty());
+        }
+        return false;
     }
 }
