@@ -188,20 +188,20 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                         params.putString(FirebaseAnalytics.Param.ITEM_ID, (String) properties.get("product_id"));
                                     }
                                 }
-                                if (firebaseEvent.equals(FirebaseAnalytics.Event.VIEW_PROMOTION) || firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_PROMOTION)) {
+                                else if (firebaseEvent.equals(FirebaseAnalytics.Event.VIEW_PROMOTION) || firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_PROMOTION)) {
                                     if (properties.containsKey("name")) {
                                         params.putString(FirebaseAnalytics.Param.PROMOTION_NAME, Utils.getString(properties.get("name")));
                                     }
                                 }
-                                if (firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_CONTENT)) {
+                                else if (firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_CONTENT)) {
                                     if (properties.containsKey("product_id")) {
                                         params.putString(FirebaseAnalytics.Param.ITEM_ID, (String) properties.get("product_id"));
                                     }
                                 }
-                                if (eventName.equals(ECommerceEvents.PRODUCT_SHARED)) {
+                                else if (eventName.equals(ECommerceEvents.PRODUCT_SHARED)) {
                                     params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "product");
                                 }
-                                if (eventName.equals(ECommerceEvents.CART_SHARED)) {
+                                else if (eventName.equals(ECommerceEvents.CART_SHARED)) {
                                     params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "cart");
                                 }
                                 handleECommerce(params, properties, firebaseEvent);
