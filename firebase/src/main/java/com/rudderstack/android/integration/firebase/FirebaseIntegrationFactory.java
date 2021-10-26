@@ -74,7 +74,6 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
             put(ECommerceEvents.PRODUCT_ADDED_TO_WISH_LIST, FirebaseAnalytics.Event.ADD_TO_WISHLIST);
             put("Application Opened", FirebaseAnalytics.Event.APP_OPEN);
             put(ECommerceEvents.CHECKOUT_STARTED, FirebaseAnalytics.Event.BEGIN_CHECKOUT);
-//            put(ECommerceEvents.ORDER_COMPLETED, FirebaseAnalytics.Event.ECOMMERCE_PURCHASE);
             put(ECommerceEvents.ORDER_COMPLETED, FirebaseAnalytics.Event.PURCHASE);
             put(ECommerceEvents.ORDER_REFUNDED, FirebaseAnalytics.Event.REFUND);
             put(ECommerceEvents.PRODUCTS_SEARCHED, FirebaseAnalytics.Event.SEARCH);
