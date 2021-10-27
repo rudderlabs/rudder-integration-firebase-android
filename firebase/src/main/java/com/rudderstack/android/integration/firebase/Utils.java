@@ -5,6 +5,7 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.rudderstack.android.sdk.core.RudderLogger;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -130,6 +131,9 @@ public class Utils {
         }
         if (value instanceof JSONArray) {
             return (((JSONArray) value).length() == 0);
+        }
+        if (value instanceof JSONObject) {
+            return (((JSONObject) value).length() == 0);
         }
         if (value instanceof Map) {
             return ((Map<?, ?>) value).size() == 0;

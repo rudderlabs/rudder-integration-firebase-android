@@ -112,6 +112,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
             add(FirebaseAnalytics.Event.PURCHASE);
             add(FirebaseAnalytics.Event.REFUND);
             add(FirebaseAnalytics.Event.VIEW_CART);
+            add(FirebaseAnalytics.Event.SELECT_CONTENT);
         }
     };
 
@@ -194,12 +195,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                         params.putString(FirebaseAnalytics.Param.PROMOTION_NAME, Utils.getString(properties.get("name")));
                                     }
                                 }
-                                else if (firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_CONTENT)) {
-                                    if (properties.containsKey("product_id")) {
-                                        params.putString(FirebaseAnalytics.Param.ITEM_ID, (String) properties.get("product_id"));
-                                    }
-                                }
-                                else if (eventName.equals(ECommerceEvents.PRODUCT_SHARED)) {
+                                else if (eventName.equals(ECommerceEvents.PRODUCT_SHARED) || firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_CONTENT)) {
                                     params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "product");
                                 }
                                 else if (eventName.equals(ECommerceEvents.CART_SHARED)) {
@@ -215,9 +211,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                 firebaseEvent = firebaseEvent.substring(0, 40);
                             }
                         }
-                        attachAllCustomProperties(params, properties);
-                        RudderLogger.logDebug("Logged \"" + firebaseEvent + "\" to Firebase");
-                        _firebaseAnalytics.logEvent(firebaseEvent, params);
+                        if (firebaseEvent != null) {
+                            attachAllCustomProperties(params, properties);
+                            RudderLogger.logDebug("Logged \"" + firebaseEvent + "\" to Firebase");
+                            _firebaseAnalytics.logEvent(firebaseEvent, params);
+                        }
                     }
                     break;
                 default:
@@ -299,6 +297,9 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                             mappedProducts.add(productBundle);
                         }
                     } catch (JSONException e) {
+                        RudderLogger.logDebug("Error while getting Products: " + products);
+                    } catch (ClassCastException e) {
+                        // If products contains list of null value
                         RudderLogger.logDebug("Error while getting Products: " + products);
                     }
                 }
@@ -401,7 +402,10 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                     }
                 }
             }
-            return new JSONArray().put(productJsonObject);
+            if (!Utils.isEmpty(productJsonObject)) {
+                return new JSONArray().put(productJsonObject);
+            }
+            return null;
         }
         try {
             return new JSONArray((ArrayList) object);
