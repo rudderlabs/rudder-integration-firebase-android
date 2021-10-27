@@ -163,7 +163,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                     break;
                 case MessageType.SCREEN:
                     String screenName = element.getEventName();
-                    if(screenName == null)
+                    if(Utils.isEmpty(screenName))
                         return;
                     params = new Bundle();
                     params.putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName);
@@ -184,14 +184,14 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                             firebaseEvent = EVENTS_MAPPING.get(eventName);
                             if (!Utils.isEmpty(firebaseEvent) && !Utils.isEmpty(properties)) {
                                 if (firebaseEvent.equals(FirebaseAnalytics.Event.SHARE)) {
-                                    if (properties.containsKey("cart_id")) {
-                                        params.putString(FirebaseAnalytics.Param.ITEM_ID, (String) properties.get("cart_id"));
-                                    } else if (properties.containsKey("product_id")) {
-                                        params.putString(FirebaseAnalytics.Param.ITEM_ID, (String) properties.get("product_id"));
+                                    if (properties.containsKey("cart_id") && !Utils.isEmpty(properties.get("cart_id"))) {
+                                        params.putString(FirebaseAnalytics.Param.ITEM_ID, Utils.getString(properties.get("cart_id")));
+                                    } else if (properties.containsKey("product_id") && !Utils.isEmpty(properties.get("product_id"))) {
+                                        params.putString(FirebaseAnalytics.Param.ITEM_ID, Utils.getString(properties.get("product_id")));
                                     }
                                 }
                                 else if (firebaseEvent.equals(FirebaseAnalytics.Event.VIEW_PROMOTION) || firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_PROMOTION)) {
-                                    if (properties.containsKey("name")) {
+                                    if (properties.containsKey("name") && !Utils.isEmpty(properties.get("name"))) {
                                         params.putString(FirebaseAnalytics.Param.PROMOTION_NAME, Utils.getString(properties.get("name")));
                                     }
                                 }
@@ -226,54 +226,54 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     }
 
     private void handleECommerce(Bundle params, Map<String, Object> properties, String firebaseEvent) {
-        if (properties.containsKey("revenue") && Utils.isCompatibleWithDouble(properties.get("revenue"))) {
+        if (properties.containsKey("revenue") && !Utils.isEmpty(properties.get("revenue")) && Utils.isCompatibleWithDouble(properties.get("revenue"))) {
             params.putDouble(FirebaseAnalytics.Param.VALUE, Utils.getDouble(properties.get("revenue")));
-        } else if (properties.containsKey("value") && Utils.isCompatibleWithDouble(properties.get("value"))) {
+        } else if (properties.containsKey("value") && !Utils.isEmpty(properties.get("value")) && Utils.isCompatibleWithDouble(properties.get("value"))) {
             params.putDouble(FirebaseAnalytics.Param.VALUE, Utils.getDouble(properties.get("value")));
-        } else if (properties.containsKey("total") && Utils.isCompatibleWithDouble(properties.get("total"))) {
+        } else if (properties.containsKey("total") && !Utils.isEmpty(properties.get("total")) && Utils.isCompatibleWithDouble(properties.get("total"))) {
             params.putDouble(FirebaseAnalytics.Param.VALUE, Utils.getDouble(properties.get("total")));
         }
         // Handle Products array or Product at the root level for the allowed events
         if (PRODUCT_EVENT.contains(firebaseEvent)) {
             handleProducts(params, properties);
         }
-        if (properties.containsKey("payment_method")) {
+        if (properties.containsKey("payment_method") && !Utils.isEmpty(properties.get("payment_method"))) {
             params.putString(FirebaseAnalytics.Param.PAYMENT_TYPE, Utils.getString(properties.get("payment_method")));
         }
-        if (properties.containsKey("coupon")) {
+        if (properties.containsKey("coupon") && !Utils.isEmpty(properties.get("coupon"))) {
             params.putString(FirebaseAnalytics.Param.COUPON, Utils.getString(properties.get("coupon")));
         }
         // Set default Currency to USD, if it is not present in the payload
-        if (properties.containsKey("currency")) {
+        if (properties.containsKey("currency") && !Utils.isEmpty(properties.get("currency"))) {
             params.putString(FirebaseAnalytics.Param.CURRENCY, Utils.getString(properties.get("currency")));
         } else {
             params.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
         }
-        if (properties.containsKey("query")) {
+        if (properties.containsKey("query") && !Utils.isEmpty(properties.get("query"))) {
             params.putString(FirebaseAnalytics.Param.SEARCH_TERM, Utils.getString(properties.get("query")));
         }
-        if (properties.containsKey("list_id")) {
+        if (properties.containsKey("list_id") && !Utils.isEmpty(properties.get("list_id"))) {
             params.putString(FirebaseAnalytics.Param.ITEM_LIST_ID, Utils.getString(properties.get("list_id")));
         }
-        if (properties.containsKey("promotion_id")) {
+        if (properties.containsKey("promotion_id") && !Utils.isEmpty(properties.get("promotion_id"))) {
             params.putString(FirebaseAnalytics.Param.PROMOTION_ID, Utils.getString(properties.get("promotion_id")));
         }
-        if (properties.containsKey("creative")) {
+        if (properties.containsKey("creative") && !Utils.isEmpty(properties.get("creative"))) {
             params.putString(FirebaseAnalytics.Param.CREATIVE_NAME, Utils.getString(properties.get("creative")));
         }
-        if (properties.containsKey("affiliation")) {
+        if (properties.containsKey("affiliation") && !Utils.isEmpty(properties.get("affiliation"))) {
             params.putString(FirebaseAnalytics.Param.AFFILIATION, Utils.getString(properties.get("affiliation")));
         }
-        if (properties.containsKey("shipping")) {
+        if (properties.containsKey("shipping") && !Utils.isEmpty(properties.get("shipping")) && Utils.isCompatibleWithDouble(properties.get("shipping"))) {
             params.putDouble(FirebaseAnalytics.Param.SHIPPING, Utils.getDouble(properties.get("shipping")));
         }
-        if (properties.containsKey("tax")) {
+        if (properties.containsKey("tax") && !Utils.isEmpty(properties.get("tax")) && Utils.isCompatibleWithDouble(properties.get("tax"))) {
             params.putDouble(FirebaseAnalytics.Param.TAX, Utils.getDouble(properties.get("tax")));
         }
-        if (properties.containsKey("order_id")) {
+        if (properties.containsKey("order_id") && !Utils.isEmpty(properties.get("order_id"))) {
             params.putString(FirebaseAnalytics.Param.TRANSACTION_ID, Utils.getString(properties.get("order_id")));
         }
-        if (properties.containsKey("share_via")) {
+        if (properties.containsKey("share_via") && !Utils.isEmpty(properties.get("share_via"))) {
             params.putString(FirebaseAnalytics.Param.METHOD, Utils.getString(properties.get("share_via")));
         }
     }

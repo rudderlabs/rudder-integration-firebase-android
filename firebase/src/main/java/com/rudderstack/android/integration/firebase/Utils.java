@@ -60,7 +60,7 @@ public class Utils {
     }
 
     static boolean isCompatibleWithDouble(Object value) {
-        if (value == null || value instanceof Number) {
+        if (value instanceof Number) {
             return true;
         }
         if (value instanceof String) {
@@ -129,6 +129,9 @@ public class Utils {
         if(value == null){
             return true;
         }
+        if (value instanceof String) {
+            return (((String) value).trim().isEmpty());
+        }
         if (value instanceof JSONArray) {
             return (((JSONArray) value).length() == 0);
         }
@@ -137,9 +140,6 @@ public class Utils {
         }
         if (value instanceof Map) {
             return ((Map<?, ?>) value).size() == 0;
-        }
-        if (value instanceof String) {
-            return (((String) value).trim().isEmpty());
         }
         return false;
     }
