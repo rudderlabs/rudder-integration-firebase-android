@@ -62,6 +62,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
             add("creative");
             add("affiliation");
             add("share_via");
+            add(ECommerceParamNames.PRODUCTS);
             add(FirebaseAnalytics.Param.SCREEN_NAME);
             add(FirebaseAnalytics.Event.SCREEN_VIEW);
         }
