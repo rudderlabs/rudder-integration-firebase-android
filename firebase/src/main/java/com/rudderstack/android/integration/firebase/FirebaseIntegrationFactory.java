@@ -295,12 +295,16 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                 putProductValue(productBundle, PRODUCTS_MAPPING.get(key), product.get(key));
                             }
                         }
-                        mappedProducts.add(productBundle);
+                        if (!productBundle.isEmpty()) {
+                            mappedProducts.add(productBundle);
+                        }
                     } catch (JSONException e) {
                         RudderLogger.logDebug("Error while getting Products: " + products);
                     }
                 }
-                params.putParcelableArrayList(FirebaseAnalytics.Param.ITEMS, mappedProducts);
+                if (!mappedProducts.isEmpty()) {
+                    params.putParcelableArrayList(FirebaseAnalytics.Param.ITEMS, mappedProducts);
+                }
             }
         }
         // If Product is present at the root level
