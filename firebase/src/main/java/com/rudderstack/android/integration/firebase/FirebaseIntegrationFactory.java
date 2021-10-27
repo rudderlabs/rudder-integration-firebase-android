@@ -166,7 +166,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                     if(screenName == null)
                         return;
                     params = new Bundle();
-                    params.putString(FirebaseAnalytics.Param.SCREEN_NAME, "screen view " + screenName);
+                    params.putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName);
                     attachAllCustomProperties(params, element.getProperties());
                     _firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, params);
                     break;
