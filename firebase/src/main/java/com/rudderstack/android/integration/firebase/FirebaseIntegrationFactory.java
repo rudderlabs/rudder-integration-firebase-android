@@ -109,15 +109,15 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                         params.putString(FirebaseAnalytics.Param.ITEM_ID, Utils.getString(properties.get("product_id")));
                                     }
                                 }
-                                else if (firebaseEvent.equals(FirebaseAnalytics.Event.VIEW_PROMOTION) || firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_PROMOTION)) {
+                                if (firebaseEvent.equals(FirebaseAnalytics.Event.VIEW_PROMOTION) || firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_PROMOTION)) {
                                     if (properties.containsKey("name") && !Utils.isEmpty(properties.get("name"))) {
                                         params.putString(FirebaseAnalytics.Param.PROMOTION_NAME, Utils.getString(properties.get("name")));
                                     }
                                 }
-                                else if (eventName.equals(ECommerceEvents.PRODUCT_SHARED) || firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_CONTENT)) {
+                                if (eventName.equals(ECommerceEvents.PRODUCT_SHARED) || firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_CONTENT)) {
                                     params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "product");
                                 }
-                                else if (eventName.equals(ECommerceEvents.CART_SHARED)) {
+                                if (eventName.equals(ECommerceEvents.CART_SHARED)) {
                                     params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "cart");
                                 }
                                 handleECommerce(params, properties, firebaseEvent);
