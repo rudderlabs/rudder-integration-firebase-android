@@ -39,34 +39,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
             "age", "gender", "interest"
     );
 
-    private final Set<String> RESERVED_PARAM_NAMES = new HashSet<String>() {
-        {
-            add("product_id");
-            add("name");
-            add("category");
-            add("quantity");
-            add("price");
-            add("currency");
-            add("value");
-            add("revenue");
-            add("total");
-            add("order_id");
-            add("tax");
-            add("shipping");
-            add("coupon");
-            add("cart_id");
-            add("payment_method");
-            add("query");
-            add("list_id");
-            add("promotion_id");
-            add("creative");
-            add("affiliation");
-            add("share_via");
-            add(ECommerceParamNames.PRODUCTS);
-            add(FirebaseAnalytics.Param.SCREEN_NAME);
-            add(FirebaseAnalytics.Event.SCREEN_VIEW);
-        }
-    };
+    private final List<String> RESERVED_PARAM_NAMES = Arrays.asList (
+            "product_id", "name", "category", "quantity", "price", "currency", "value", "revenue", "total", "order_id",
+            "tax", "shipping", "coupon", "cart_id", "payment_method", "query", "list_id", "promotion_id", "creative",
+            "affiliation", "share_via", ECommerceParamNames.PRODUCTS, FirebaseAnalytics.Param.SCREEN_NAME,
+            FirebaseAnalytics.Event.SCREEN_VIEW);
 
     private final Map<String, String> EVENTS_MAPPING = new HashMap<String, String>() {
         {
@@ -100,21 +77,19 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         }
     };
 
-    private final Set<String> PRODUCT_EVENT = new HashSet<String>() {
-        {
-            add(FirebaseAnalytics.Event.ADD_PAYMENT_INFO);
-            add(FirebaseAnalytics.Event.ADD_TO_CART);
-            add(FirebaseAnalytics.Event.ADD_TO_WISHLIST);
-            add(FirebaseAnalytics.Event.BEGIN_CHECKOUT);
-            add(FirebaseAnalytics.Event.REMOVE_FROM_CART);
-            add(FirebaseAnalytics.Event.VIEW_ITEM);
-            add(FirebaseAnalytics.Event.VIEW_ITEM_LIST);
-            add(FirebaseAnalytics.Event.PURCHASE);
-            add(FirebaseAnalytics.Event.REFUND);
-            add(FirebaseAnalytics.Event.VIEW_CART);
-            add(FirebaseAnalytics.Event.SELECT_CONTENT);
-        }
-    };
+    private final List<String> PRODUCT_EVENT = Arrays.asList(
+            FirebaseAnalytics.Event.ADD_PAYMENT_INFO,
+            FirebaseAnalytics.Event.ADD_TO_CART,
+            FirebaseAnalytics.Event.ADD_TO_WISHLIST,
+            FirebaseAnalytics.Event.BEGIN_CHECKOUT,
+            FirebaseAnalytics.Event.REMOVE_FROM_CART,
+            FirebaseAnalytics.Event.VIEW_ITEM,
+            FirebaseAnalytics.Event.VIEW_ITEM_LIST,
+            FirebaseAnalytics.Event.PURCHASE,
+            FirebaseAnalytics.Event.REFUND,
+            FirebaseAnalytics.Event.VIEW_CART,
+            FirebaseAnalytics.Event.SELECT_CONTENT
+    );
 
     public static Factory FACTORY = new Factory() {
         @Override
