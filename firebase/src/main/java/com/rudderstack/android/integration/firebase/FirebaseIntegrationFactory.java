@@ -114,7 +114,13 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                                         params.putString(FirebaseAnalytics.Param.PROMOTION_NAME, Utils.getString(properties.get("name")));
                                     }
                                 }
-                                if (eventName.equals(ECommerceEvents.PRODUCT_SHARED) || firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_CONTENT)) {
+                                if (eventName.equals(ECommerceEvents.PRODUCT_SHARED)) {
+                                    params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "product");
+                                }
+                                if (firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_CONTENT)) {
+                                    if (!Utils.isEmpty(properties.get("product_id"))) {
+                                        params.putString(FirebaseAnalytics.Param.ITEM_ID, Utils.getString(properties.get("product_id")));
+                                    }
                                     params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "product");
                                 }
                                 if (eventName.equals(ECommerceEvents.CART_SHARED)) {
@@ -307,7 +313,8 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
 
     @Override
     public void reset() {
-        // Firebase doesn't support reset functionality
+        _firebaseAnalytics.setUserId(null);
+        RudderLogger.logDebug("Reset: _firebaseAnalytics.setUserId(null);");
     }
 
     @Override

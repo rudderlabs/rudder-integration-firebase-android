@@ -71,8 +71,7 @@ public class Utils {
             FirebaseAnalytics.Event.VIEW_ITEM_LIST,
             FirebaseAnalytics.Event.PURCHASE,
             FirebaseAnalytics.Event.REFUND,
-            FirebaseAnalytics.Event.VIEW_CART,
-            FirebaseAnalytics.Event.SELECT_CONTENT
+            FirebaseAnalytics.Event.VIEW_CART
     );
 
     static final Map<String, String> ECOMMERCE_PROPERTY_MAPPING = new HashMap<String, String>() {
