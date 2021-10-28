@@ -142,11 +142,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     }
 
     private void handleECommerce(Bundle params, Map<String, Object> properties, String firebaseEvent) {
-        if (properties.containsKey("revenue") && !Utils.isEmpty(properties.get("revenue")) && Utils.isCompatibleWithDouble(properties.get("revenue"))) {
+        if (properties.containsKey("revenue") && !Utils.isEmpty(properties.get("revenue")) && Utils.isDouble(properties.get("revenue"))) {
             params.putDouble(FirebaseAnalytics.Param.VALUE, Utils.getDouble(properties.get("revenue")));
-        } else if (properties.containsKey("value") && !Utils.isEmpty(properties.get("value")) && Utils.isCompatibleWithDouble(properties.get("value"))) {
+        } else if (properties.containsKey("value") && !Utils.isEmpty(properties.get("value")) && Utils.isDouble(properties.get("value"))) {
             params.putDouble(FirebaseAnalytics.Param.VALUE, Utils.getDouble(properties.get("value")));
-        } else if (properties.containsKey("total") && !Utils.isEmpty(properties.get("total")) && Utils.isCompatibleWithDouble(properties.get("total"))) {
+        } else if (properties.containsKey("total") && !Utils.isEmpty(properties.get("total")) && Utils.isDouble(properties.get("total"))) {
             params.putDouble(FirebaseAnalytics.Param.VALUE, Utils.getDouble(properties.get("total")));
         }
         // Handle Products array or Product at the root level for the allowed events
@@ -164,10 +164,10 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         } else {
             params.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
         }
-        if (properties.containsKey("shipping") && !Utils.isEmpty(properties.get("shipping")) && Utils.isCompatibleWithDouble(properties.get("shipping"))) {
+        if (properties.containsKey("shipping") && !Utils.isEmpty(properties.get("shipping")) && Utils.isDouble(properties.get("shipping"))) {
             params.putDouble(FirebaseAnalytics.Param.SHIPPING, Utils.getDouble(properties.get("shipping")));
         }
-        if (properties.containsKey("tax") && !Utils.isEmpty(properties.get("tax")) && Utils.isCompatibleWithDouble(properties.get("tax"))) {
+        if (properties.containsKey("tax") && !Utils.isEmpty(properties.get("tax")) && Utils.isDouble(properties.get("tax"))) {
             params.putDouble(FirebaseAnalytics.Param.TAX, Utils.getDouble(properties.get("tax")));
         }
     }
@@ -253,10 +253,14 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                     params.putString(firebaseKey, Utils.getString(value));
                     return;
                 case FirebaseAnalytics.Param.QUANTITY:
-                    params.putLong(firebaseKey, Utils.getLong(value));
+                    if (Utils.isLong(value)) {
+                        params.putLong(firebaseKey, Utils.getLong(value));
+                    }
                     return;
                 case FirebaseAnalytics.Param.PRICE:
-                    params.putDouble(firebaseKey, Utils.getDouble(value));
+                    if (Utils.isDouble(value)) {
+                        params.putDouble(firebaseKey, Utils.getDouble(value));
+                    }
                     return;
                 default:
                     RudderLogger.logDebug("Product value is not of expected type");

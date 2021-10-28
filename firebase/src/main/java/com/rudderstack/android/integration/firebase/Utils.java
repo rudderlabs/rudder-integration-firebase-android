@@ -22,6 +22,7 @@ public class Utils {
     static final List<String> GOOGLE_RESERVED_KEYWORDS = Arrays.asList(
             "age", "gender", "interest"
     );
+
     static final List<String> RESERVED_PARAM_NAMES = Arrays.asList (
             "product_id", "name", "category", "quantity", "price", "currency", "value", "revenue", "total", "order_id",
             "tax", "shipping", "coupon", "cart_id", "payment_method", "query", "list_id", "promotion_id", "creative",
@@ -141,13 +142,28 @@ public class Utils {
         return object.getClass().getSimpleName();
     }
 
-    static boolean isCompatibleWithDouble(Object value) {
+    static boolean isDouble(Object value) {
         if (value instanceof Number) {
             return true;
         }
         if (value instanceof String) {
             try {
                 Double.parseDouble((String) value);
+                return true;
+            } catch (NumberFormatException ignored) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    static boolean isLong(Object value) {
+        if (value instanceof Number) {
+            return true;
+        }
+        if (value instanceof String) {
+            try {
+                Long.parseLong((String) value);
                 return true;
             } catch (NumberFormatException ignored) {
                 return false;
