@@ -157,7 +157,21 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         }
         // Handle Products array or Product at the root level for the allowed events
         if (EVENT_WITH_PRODUCTS.contains(firebaseEvent)) {
-            handleProducts(params, properties);
+            /*
+            * For "Purchase" E-Commerce event in Firebase-Android send product
+            * at the root level i.e., no products array should be sent
+            * TODO: Handle Products array for "Purchase" E-Commerce event
+             */
+            if (firebaseEvent.equals(FirebaseAnalytics.Event.PURCHASE)) {
+                for (String key : PRODUCT_PROPERTIES_MAPPING.keySet()) {
+                    if (properties.containsKey(key)) {
+                        putProductValue(params, PRODUCT_PROPERTIES_MAPPING.get(key), properties.get(key));
+                    }
+                }
+            }
+            else {
+                handleProducts(params, properties);
+            }
         }
         for (String propertyKey : properties.keySet()) {
             if (ECOMMERCE_PROPERTY_MAPPING.containsKey(propertyKey) && !Utils.isEmpty(properties.get(propertyKey))) {
