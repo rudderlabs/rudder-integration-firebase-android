@@ -19,15 +19,14 @@ import java.util.Map;
 
 public class Utils {
 
-    static final List<String> GOOGLE_RESERVED_KEYWORDS = Arrays.asList(
+    static final List<String> IDENTIFY_RESERVED_KEYWORDS = Arrays.asList(
             "age", "gender", "interest"
     );
 
-    static final List<String> RESERVED_PARAM_NAMES = Arrays.asList (
+    static final List<String> TRACK_RESERVED_KEYWORDS = Arrays.asList (
             "product_id", "name", "category", "quantity", "price", "currency", "value", "revenue", "total", "order_id",
             "tax", "shipping", "coupon", "cart_id", "payment_method", "query", "list_id", "promotion_id", "creative",
-            "affiliation", "share_via", ECommerceParamNames.PRODUCTS, FirebaseAnalytics.Param.SCREEN_NAME,
-            FirebaseAnalytics.Event.SCREEN_VIEW);
+            "affiliation", "share_via", ECommerceParamNames.PRODUCTS, FirebaseAnalytics.Param.SCREEN_NAME);
 
     static final Map<String, String> ECOMMERCE_EVENTS_MAPPING = new HashMap<String, String>() {
         {

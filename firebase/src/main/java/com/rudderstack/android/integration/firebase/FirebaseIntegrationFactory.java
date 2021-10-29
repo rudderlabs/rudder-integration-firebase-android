@@ -2,10 +2,10 @@ package com.rudderstack.android.integration.firebase;
 
 import static com.rudderstack.android.integration.firebase.Utils.ECOMMERCE_PROPERTY_MAPPING;
 import static com.rudderstack.android.integration.firebase.Utils.ECOMMERCE_EVENTS_MAPPING;
-import static com.rudderstack.android.integration.firebase.Utils.GOOGLE_RESERVED_KEYWORDS;
+import static com.rudderstack.android.integration.firebase.Utils.IDENTIFY_RESERVED_KEYWORDS;
 import static com.rudderstack.android.integration.firebase.Utils.PRODUCT_PROPERTIES_MAPPING;
 import static com.rudderstack.android.integration.firebase.Utils.EVENT_WITH_PRODUCTS;
-import static com.rudderstack.android.integration.firebase.Utils.RESERVED_PARAM_NAMES;
+import static com.rudderstack.android.integration.firebase.Utils.TRACK_RESERVED_KEYWORDS;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -74,7 +74,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                             continue; // userId is already set
                         }
                         String firebaseKey = Utils.getTrimKey(key);
-                        if (!GOOGLE_RESERVED_KEYWORDS.contains(firebaseKey)) {
+                        if (!IDENTIFY_RESERVED_KEYWORDS.contains(firebaseKey)) {
                             RudderLogger.logDebug("Setting userProperties to Firebase");
                             _firebaseAnalytics.setUserProperty(firebaseKey, traits.get(key));
                         }
@@ -227,7 +227,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
             for (String key : properties.keySet()) {
                 String firebaseKey = Utils.getTrimKey(key);
                 Object value = properties.get(key);
-                if (!RESERVED_PARAM_NAMES.contains(firebaseKey) && !Utils.isEmpty(value)) {
+                if (!TRACK_RESERVED_KEYWORDS.contains(firebaseKey) && !Utils.isEmpty(value)) {
                     if (value instanceof String) {
                         String val = (String) value;
                         if (val.length() > 100) val = val.substring(0, 100);
