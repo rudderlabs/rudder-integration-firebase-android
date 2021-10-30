@@ -1,5 +1,13 @@
 package com.rudderstack.android.integration.firebase;
 
+import static com.rudderstack.android.integration.firebase.Utils.ECOMMERCE_PROPERTY_MAPPING;
+import static com.rudderstack.android.integration.firebase.Utils.ECOMMERCE_EVENTS_MAPPING;
+import static com.rudderstack.android.integration.firebase.Utils.EVENT_WITH_PRODUCTS_ARRAY;
+import static com.rudderstack.android.integration.firebase.Utils.EVENT_WITH_PRODUCTS_AT_ROOT;
+import static com.rudderstack.android.integration.firebase.Utils.IDENTIFY_RESERVED_KEYWORDS;
+import static com.rudderstack.android.integration.firebase.Utils.PRODUCT_PROPERTIES_MAPPING;
+import static com.rudderstack.android.integration.firebase.Utils.TRACK_RESERVED_KEYWORDS;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -15,10 +23,15 @@ import com.rudderstack.android.sdk.core.RudderIntegration;
 import com.rudderstack.android.sdk.core.RudderLogger;
 import com.rudderstack.android.sdk.core.RudderMessage;
 import com.rudderstack.android.sdk.core.ecomm.ECommerceEvents;
+import com.rudderstack.android.sdk.core.ecomm.ECommerceParamNames;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,20 +39,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     private static final String FIREBASE_KEY = "Firebase";
     private static FirebaseAnalytics _firebaseAnalytics;
 
-    private static final List<String> GOOGLE_RESERVED_KEYWORDS = Arrays.asList(
-            "age", "gender", "interest"
-    );
-
-    private static final List<String> RESERVED_PARAM_NAMES = Arrays.asList(
-            "product_id", "name", "category", "quantity", "price", "currency",
-            "value", "revenue", "total", "order_id", "tax", "shipping", "coupon"
-    );
-
     public static Factory FACTORY = new Factory() {
         @Override
         public RudderIntegration<?> create(@Nullable Object settings, @NonNull RudderClient client, @NonNull RudderConfig rudderConfig) {
             RudderLogger.logDebug("Creating RudderIntegrationFactory");
-            return new FirebaseIntegrationFactory(settings, client, rudderConfig);
+            return new FirebaseIntegrationFactory();
         }
 
         @Override
@@ -48,7 +52,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         }
     };
 
-    private FirebaseIntegrationFactory(@Nullable Object config, @NonNull RudderClient client, @NonNull RudderConfig rudderConfig) {
+    private FirebaseIntegrationFactory() {
         if (RudderClient.getApplication() != null) {
             RudderLogger.logDebug("Initializing Firebase SDK");
             _firebaseAnalytics = FirebaseAnalytics.getInstance(RudderClient.getApplication());
@@ -57,6 +61,8 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
 
     private void processRudderEvent(@NonNull RudderMessage element) {
         if (element.getType() != null && _firebaseAnalytics != null) {
+            Bundle params;
+            Map<String, Object> properties;
             switch (element.getType()) {
                 case MessageType.IDENTIFY:
                     if (!TextUtils.isEmpty(element.getUserId())) {
@@ -68,150 +74,68 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                         if (key.equals("userId")) {
                             continue; // userId is already set
                         }
-                        String firebaseKey = key.toLowerCase().trim().replace(" ", "_");
-                        if (firebaseKey.length() > 40) {
-                            firebaseKey = firebaseKey.substring(0, 40);
-                        }
-                        if (!GOOGLE_RESERVED_KEYWORDS.contains(firebaseKey)) {
+                        String firebaseKey = Utils.getTrimKey(key);
+                        if (!IDENTIFY_RESERVED_KEYWORDS.contains(firebaseKey)) {
                             RudderLogger.logDebug("Setting userProperties to Firebase");
                             _firebaseAnalytics.setUserProperty(firebaseKey, traits.get(key));
                         }
                     }
                     break;
                 case MessageType.SCREEN:
-                    RudderLogger.logInfo("Rudder doesn't support screen calls for Firebase Native SDK mode as screen recording in Firebase works out of the box");
+                    String screenName = element.getEventName();
+                    if(Utils.isEmpty(screenName))
+                        return;
+                    params = new Bundle();
+                    params.putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName);
+                    attachAllCustomProperties(params, element.getProperties());
+                    _firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, params);
                     break;
                 case MessageType.TRACK:
                     String eventName = element.getEventName();
-                    if (eventName != null && !eventName.isEmpty()) {
+                    if (!Utils.isEmpty(eventName)) {
                         String firebaseEvent;
-                        Bundle params = null;
-                        switch (eventName) {
-                            case ECommerceEvents.PAYMENT_INFO_ENTERED:
-                                firebaseEvent = FirebaseAnalytics.Event.ADD_PAYMENT_INFO;
-                                break;
-                            case ECommerceEvents.PRODUCT_ADDED:
-                                firebaseEvent = FirebaseAnalytics.Event.ADD_TO_CART;
-                                params = new Bundle();
-                                this.addProductProperties(params, element.getProperties());
-                                break;
-                            case ECommerceEvents.PRODUCT_ADDED_TO_WISH_LIST:
-                                firebaseEvent = FirebaseAnalytics.Event.ADD_TO_WISHLIST;
-                                params = new Bundle();
-                                this.addProductProperties(params, element.getProperties());
-                                break;
-                            case "Application Opened":
-                                firebaseEvent = FirebaseAnalytics.Event.APP_OPEN;
-                                break;
-                            case ECommerceEvents.CHECKOUT_STARTED:
-                                firebaseEvent = FirebaseAnalytics.Event.BEGIN_CHECKOUT;
-                                params = new Bundle();
-                                this.addOrderProperties(params, element.getProperties());
-                                break;
-                            case ECommerceEvents.ORDER_COMPLETED:
-                                firebaseEvent = FirebaseAnalytics.Event.ECOMMERCE_PURCHASE;
-                                params = new Bundle();
-                                this.addOrderProperties(params, element.getProperties());
-                                if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
-                                    Object products = element.getProperties().get("products");
-                                    if (products instanceof ArrayList) {
-                                        ArrayList<Map<String, Object>> productArr = (ArrayList<Map<String, Object>>) products;
-                                        for (int index = 0; index < productArr.size(); index++) {
-                                            this.addProductProperties(params, productArr.get(index));
-                                        }
-                                    } else if (products instanceof Map) {
-                                        this.addProductProperties(params, (Map<String, Object>) products);
-                                    }
-                                }
-                                break;
-                            case ECommerceEvents.ORDER_REFUNDED:
-                                firebaseEvent = FirebaseAnalytics.Event.PURCHASE_REFUND;
-                                params = new Bundle();
-                                this.addOrderProperties(params, element.getProperties());
-                                if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
-                                    Object products = element.getProperties().get("products");
-                                    if (products instanceof ArrayList) {
-                                        ArrayList<Map<String, Object>> productArr = (ArrayList<Map<String, Object>>) products;
-                                        for (int index = 0; index < productArr.size(); index++) {
-                                            this.addProductProperties(params, productArr.get(index));
-                                        }
-                                    } else if (products instanceof Map) {
-                                        this.addProductProperties(params, (Map<String, Object>) products);
-                                    }
-                                }
-                                break;
-                            case ECommerceEvents.PRODUCTS_SEARCHED:
-                                firebaseEvent = FirebaseAnalytics.Event.SEARCH;
-                                params = new Bundle();
-                                this.addSearchProperties(params, element.getProperties());
-                                break;
-                            case ECommerceEvents.PRODUCT_SHARED:
-                                firebaseEvent = FirebaseAnalytics.Event.SHARE;
-                                params = new Bundle();
-                                this.addShareProperties(params, element.getProperties());
-                                params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "product");
-                                break;
-                            case ECommerceEvents.CART_SHARED:
-                                firebaseEvent = FirebaseAnalytics.Event.SHARE;
-                                params = new Bundle();
-                                this.addShareProperties(params, element.getProperties());
-                                params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "cart");
-                                break;
-                            case ECommerceEvents.PRODUCT_VIEWED:
-                                firebaseEvent = FirebaseAnalytics.Event.VIEW_ITEM;
-                                params = new Bundle();
-                                this.addProductProperties(params, element.getProperties());
-                                break;
-                            case ECommerceEvents.PRODUCT_LIST_VIEWED:
-                                firebaseEvent = FirebaseAnalytics.Event.VIEW_ITEM_LIST;
-                                params = new Bundle();
-                                this.addProductListProperty(params, element.getProperties());
-                                if (!Utils.isEmpty(element.getProperties()) && element.getProperties().containsKey("products")) {
-                                    Object products = element.getProperties().get("products");
-                                    if (products instanceof ArrayList) {
-                                        ArrayList<Map<String, Object>> productArr = (ArrayList<Map<String, Object>>) products;
-                                        for (int index = 0; index < productArr.size(); index++) {
-                                            this.addProductProperties(params, productArr.get(index));
-                                        }
-                                    } else if (products instanceof Map) {
-                                        this.addProductProperties(params, (Map<String, Object>) products);
-                                    }
-                                }
-                                break;
-                            case ECommerceEvents.PRODUCT_REMOVED:
-                                firebaseEvent = FirebaseAnalytics.Event.REMOVE_FROM_CART;
-                                params = new Bundle();
-                                this.addProductProperties(params, element.getProperties());
-                                break;
-                            case ECommerceEvents.CHECKOUT_STEP_VIEWED:
-                                firebaseEvent = FirebaseAnalytics.Event.CHECKOUT_PROGRESS;
-                                params = new Bundle();
-                                this.addCheckoutProperties(params, element.getProperties());
-                                break;
-                            case ECommerceEvents.PRODUCT_CLICKED:
-                                firebaseEvent = FirebaseAnalytics.Event.SELECT_CONTENT;
-                                params = new Bundle();
-                                this.addProductProperties(params, element.getProperties());
-                                params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "product");
-                                break;
-                            case ECommerceEvents.PROMOTION_VIEWED:
-                                firebaseEvent = FirebaseAnalytics.Event.PRESENT_OFFER;
-
-                                break;
-                            default:
-                                // log custom event
-                                firebaseEvent = eventName.toLowerCase().trim().replace(" ", "_");
-                                if (firebaseEvent.length() > 40) {
-                                    firebaseEvent = firebaseEvent.substring(0, 40);
-                                }
+                        properties = element.getProperties();
+                        params = new Bundle();
+                        if (eventName.equals("Application Opened")) {
+                            firebaseEvent = FirebaseAnalytics.Event.APP_OPEN;
                         }
-                        if (!TextUtils.isEmpty(firebaseEvent)) {
-                            if (params == null) {
-                                params = new Bundle();
-                                this.attachAllCustomProperties(params, element.getProperties());
-                            } else {
-                                this.attachUnreservedCustomProperties(params, element.getProperties());
+                        // Handle E-Commerce event
+                        else if (ECOMMERCE_EVENTS_MAPPING.containsKey(eventName)) {
+                            firebaseEvent = ECOMMERCE_EVENTS_MAPPING.get(eventName);
+                            if (!Utils.isEmpty(firebaseEvent) && !Utils.isEmpty(properties)) {
+                                if (firebaseEvent.equals(FirebaseAnalytics.Event.SHARE)) {
+                                    if (properties.containsKey("cart_id") && !Utils.isEmpty(properties.get("cart_id"))) {
+                                        params.putString(FirebaseAnalytics.Param.ITEM_ID, Utils.getString(properties.get("cart_id")));
+                                    } else if (properties.containsKey("product_id") && !Utils.isEmpty(properties.get("product_id"))) {
+                                        params.putString(FirebaseAnalytics.Param.ITEM_ID, Utils.getString(properties.get("product_id")));
+                                    }
+                                }
+                                if (firebaseEvent.equals(FirebaseAnalytics.Event.VIEW_PROMOTION) || firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_PROMOTION)) {
+                                    if (properties.containsKey("name") && !Utils.isEmpty(properties.get("name"))) {
+                                        params.putString(FirebaseAnalytics.Param.PROMOTION_NAME, Utils.getString(properties.get("name")));
+                                    }
+                                }
+                                if (eventName.equals(ECommerceEvents.PRODUCT_SHARED)) {
+                                    params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "product");
+                                }
+                                if (firebaseEvent.equals(FirebaseAnalytics.Event.SELECT_CONTENT)) {
+                                    if (!Utils.isEmpty(properties.get("product_id"))) {
+                                        params.putString(FirebaseAnalytics.Param.ITEM_ID, Utils.getString(properties.get("product_id")));
+                                    }
+                                    params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "product");
+                                }
+                                if (eventName.equals(ECommerceEvents.CART_SHARED)) {
+                                    params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "cart");
+                                }
+                                handleECommerce(params, properties, firebaseEvent);
                             }
+                        }
+                        // Handle custom event
+                        else {
+                            firebaseEvent = Utils.getTrimKey(eventName);
+                        }
+                        if (firebaseEvent != null) {
+                            attachAllCustomProperties(params, properties);
                             RudderLogger.logDebug("Logged \"" + firebaseEvent + "\" to Firebase");
                             _firebaseAnalytics.logEvent(firebaseEvent, params);
                         }
@@ -224,154 +148,101 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         }
     }
 
-    private void addCheckoutProperties(Bundle params, Map<String, Object> properties) {
-        if (params != null && properties != null && properties.containsKey("step")) {
-            String step = (String) properties.get("step");
-            params.putInt(FirebaseAnalytics.Param.CHECKOUT_STEP, Integer.parseInt(step != null ? step : "0"));
+    private void handleECommerce(Bundle params, Map<String, Object> properties, String firebaseEvent) {
+        if (properties.containsKey("revenue") && !Utils.isEmpty(properties.get("revenue")) && Utils.isDouble(properties.get("revenue"))) {
+            params.putDouble(FirebaseAnalytics.Param.VALUE, Utils.getDouble(properties.get("revenue")));
+        } else if (properties.containsKey("value") && !Utils.isEmpty(properties.get("value")) && Utils.isDouble(properties.get("value"))) {
+            params.putDouble(FirebaseAnalytics.Param.VALUE, Utils.getDouble(properties.get("value")));
+        } else if (properties.containsKey("total") && !Utils.isEmpty(properties.get("total")) && Utils.isDouble(properties.get("total"))) {
+            params.putDouble(FirebaseAnalytics.Param.VALUE, Utils.getDouble(properties.get("total")));
         }
-    }
-
-    private void addProductListProperty(Bundle params, Map<String, Object> properties) {
-        if (params != null && properties != null && properties.containsKey("category")) {
-            params.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, (String) properties.get("category"));
+        if (EVENT_WITH_PRODUCTS_ARRAY.contains(firebaseEvent) && properties.containsKey(ECommerceParamNames.PRODUCTS)) {
+            handleProducts(params, properties, true);
         }
-    }
-
-    private void addShareProperties(Bundle params, Map<String, Object> properties) {
-        if (params != null && properties != null) {
-            if (properties.containsKey("cart_id")) {
-                params.putString(FirebaseAnalytics.Param.ITEM_ID, (String) properties.get("cart_id"));
-            } else if (properties.containsKey("product_id")) {
-                params.putString(FirebaseAnalytics.Param.ITEM_ID, (String) properties.get("product_id"));
-            }
-            if (properties.containsKey("share_via")) {
-                params.putString(FirebaseAnalytics.Param.METHOD, (String) properties.get("share_via"));
+        if (EVENT_WITH_PRODUCTS_AT_ROOT.contains(firebaseEvent)) {
+            handleProducts(params, properties, false);
+        }
+        for (String propertyKey : properties.keySet()) {
+            if (ECOMMERCE_PROPERTY_MAPPING.containsKey(propertyKey) && !Utils.isEmpty(properties.get(propertyKey))) {
+                params.putString(ECOMMERCE_PROPERTY_MAPPING.get(propertyKey), Utils.getString(properties.get(propertyKey)));
             }
         }
-    }
-
-    private void addSearchProperties(Bundle params, Map<String, Object> properties) {
-        if (params != null && properties != null && properties.containsKey("query")) {
-            params.putString(FirebaseAnalytics.Param.SEARCH_TERM, (String) properties.get("query"));
+        // Set default Currency to USD, if it is not present in the payload
+        if (properties.containsKey("currency") && !Utils.isEmpty(properties.get("currency"))) {
+            params.putString(FirebaseAnalytics.Param.CURRENCY, Utils.getString(properties.get("currency")));
+        } else {
+            params.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
+        }
+        if (properties.containsKey("shipping") && !Utils.isEmpty(properties.get("shipping")) && Utils.isDouble(properties.get("shipping"))) {
+            params.putDouble(FirebaseAnalytics.Param.SHIPPING, Utils.getDouble(properties.get("shipping")));
+        }
+        if (properties.containsKey("tax") && !Utils.isEmpty(properties.get("tax")) && Utils.isDouble(properties.get("tax"))) {
+            params.putDouble(FirebaseAnalytics.Param.TAX, Utils.getDouble(properties.get("tax")));
         }
     }
 
-    private void addOrderProperties(Bundle params, Map<String, Object> properties) {
-        if (params != null && properties != null) {
-            try {
-                if (properties.containsKey("revenue") && Utils.isCompatibleWithFloat(properties.get("revenue"))) {
-                    params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("revenue")));
-                } else if (properties.containsKey("value") && Utils.isCompatibleWithFloat(properties.get("value"))) {
-                    params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("value")));
-                } else if (properties.containsKey("total") && Utils.isCompatibleWithFloat(properties.get("total"))) {
-                    params.putFloat(FirebaseAnalytics.Param.VALUE, Utils.getFloat(properties.get("total")));
-                }
-                if (properties.containsKey("currency")) {
-                    params.putString(FirebaseAnalytics.Param.CURRENCY, (String) properties.get("currency"));
-                } else {
-                    params.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
-                }
-                if (properties.containsKey("order_id")) {
-                    params.putString(FirebaseAnalytics.Param.TRANSACTION_ID, (String) properties.get("order_id"));
-                }
-                if (properties.containsKey("tax") && Utils.isCompatibleWithFloat(properties.get("tax"))) {
-                    params.putFloat(FirebaseAnalytics.Param.TAX, Utils.getFloat(properties.get("tax")));
-                }
-                if (properties.containsKey("shipping") && Utils.isCompatibleWithFloat(properties.get("shipping"))) {
-                    params.putFloat(FirebaseAnalytics.Param.SHIPPING, Utils.getFloat(properties.get("shipping")));
-                }
-                if (properties.containsKey("coupon")) {
-                    params.putString(FirebaseAnalytics.Param.COUPON, (String) properties.get("coupon"));
-                }
-            } catch (Exception ex) {
-                RudderLogger.logError(ex);
-            }
-        }
-    }
-
-    private void addProductProperties(Bundle params, Map<String, Object> properties) {
-        if (properties != null && params != null) {
-            try {
-                if (properties.containsKey("product_id")) {
-                    params.putString(FirebaseAnalytics.Param.ITEM_ID, (String) properties.get("product_id"));
-                }
-                if (properties.containsKey("name")) {
-                    params.putString(FirebaseAnalytics.Param.ITEM_NAME, (String) properties.get("name"));
-                }
-                if (properties.containsKey("category")) {
-                    params.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, (String) properties.get("category"));
-                }
-                if (properties.containsKey("quantity")) {
-                    params.putLong(FirebaseAnalytics.Param.QUANTITY, Utils.getLong(properties.get("quantity")));
-                }
-                if (properties.containsKey("price")) {
-                    params.putLong(FirebaseAnalytics.Param.PRICE, Utils.getLong(properties.get("price")));
-                }
-                if (properties.containsKey("currency")) {
-                    params.putString(FirebaseAnalytics.Param.CURRENCY, (String) properties.get("currency"));
-                } else {
-                    params.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
-                }
-            } catch (Exception ex) {
-                RudderLogger.logError(ex);
-            }
-        }
-    }
-
-    private void attachUnreservedCustomProperties(Bundle params, Map<String, Object> properties) {
-        if (properties != null) {
-            for (String key : properties.keySet()) {
-                if (!RESERVED_PARAM_NAMES.contains(key)) {
-                    String firebaseKey = key.toLowerCase().trim().replace(" ", "_");
-                    if (firebaseKey.length() > 40) {
-                        firebaseKey = firebaseKey.substring(0, 40);
-                    }
-                    Object value = properties.get(key);
-                    if (value != null) {
-                        if (value instanceof Boolean) {
-                            params.putBoolean(firebaseKey, (Boolean) value);
-                        } else if (value instanceof Integer) {
-                            params.putInt(firebaseKey, (Integer) value);
-                        } else if (value instanceof Long) {
-                            params.putLong(firebaseKey, (Long) value);
-                        } else if (value instanceof Double) {
-                            params.putDouble(firebaseKey, (Double) value);
-                        } else if (value instanceof String) {
-                            String val = (String) value;
-                            if (val.length() > 100) val = val.substring(0, 100);
-                            params.putString(firebaseKey, val);
-                        } else {
-                            String val = new Gson().toJson(value);
-                            // if length exceeds 100, don't send the property
-                            if (!(val.length() > 100)) params.putString(firebaseKey, val);
+    private void handleProducts(Bundle params, Map<String, Object> properties, boolean isProductsArray) {
+        // If Products array is present
+        if (isProductsArray) {
+            JSONArray products = getProductsJSONArray(properties.get(ECommerceParamNames.PRODUCTS));
+            if (!Utils.isEmpty(products)) {
+                ArrayList<Bundle> mappedProducts = new ArrayList<>();
+                for (int i = 0; i < products.length(); i++) {
+                    try {
+                        JSONObject product = (JSONObject) products.get(i);
+                        Bundle productBundle = new Bundle();
+                        for (String key : PRODUCT_PROPERTIES_MAPPING.keySet()) {
+                            if (product.has(key)) {
+                                putProductValue(productBundle, PRODUCT_PROPERTIES_MAPPING.get(key), product.get(key));
+                            }
                         }
+                        if (!productBundle.isEmpty()) {
+                            mappedProducts.add(productBundle);
+                        }
+                    } catch (JSONException e) {
+                        RudderLogger.logDebug("Error while getting Products: " + products);
+                    } catch (ClassCastException e) {
+                        // If products contains list of null value
+                        RudderLogger.logDebug("Error while getting Products: " + products);
                     }
                 }
+                if (!mappedProducts.isEmpty()) {
+                    params.putParcelableArrayList(FirebaseAnalytics.Param.ITEMS, mappedProducts);
+                }
+            }
+        }
+        // If Product is present at the root level
+        else {
+            Bundle productBundle = new Bundle();
+            for (String key : PRODUCT_PROPERTIES_MAPPING.keySet()) {
+                if (properties.containsKey(key)) {
+                    putProductValue(productBundle, PRODUCT_PROPERTIES_MAPPING.get(key), properties.get(key));
+                }
+            }
+            if (!productBundle.isEmpty()) {
+                params.putParcelableArray(FirebaseAnalytics.Param.ITEMS, new Bundle[]{productBundle});
             }
         }
     }
 
     private void attachAllCustomProperties(Bundle params, Map<String, Object> properties) {
-        if (properties != null) {
+        if (!Utils.isEmpty(properties)) {
             for (String key : properties.keySet()) {
-                String firebaseKey = key.toLowerCase().trim().replace(" ", "_");
-                if (firebaseKey.length() > 40) {
-                    firebaseKey = firebaseKey.substring(0, 40);
-                }
+                String firebaseKey = Utils.getTrimKey(key);
                 Object value = properties.get(key);
-                if (value != null) {
-                    if (value instanceof Boolean) {
-                        params.putBoolean(firebaseKey, (Boolean) value);
+                if (!TRACK_RESERVED_KEYWORDS.contains(firebaseKey) && !Utils.isEmpty(value)) {
+                    if (value instanceof String) {
+                        String val = (String) value;
+                        if (val.length() > 100) val = val.substring(0, 100);
+                        params.putString(firebaseKey, val);
                     } else if (value instanceof Integer) {
                         params.putInt(firebaseKey, (Integer) value);
                     } else if (value instanceof Long) {
                         params.putLong(firebaseKey, (Long) value);
                     } else if (value instanceof Double) {
                         params.putDouble(firebaseKey, (Double) value);
-                    } else if (value instanceof String) {
-                        String val = (String) value;
-                        if (val.length() > 100) val = val.substring(0, 100);
-                        params.putString(firebaseKey, val);
+                    } else if (value instanceof Boolean) {
+                        params.putBoolean(firebaseKey, (Boolean) value);
                     } else {
                         String val = new Gson().toJson(value);
                         // if length exceeds 100, don't send the property
@@ -382,9 +253,71 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         }
     }
 
+    private static void putProductValue(Bundle params, String firebaseKey, Object value) {
+        if (value != null) {
+            switch (firebaseKey) {
+                case FirebaseAnalytics.Param.ITEM_ID:
+                case FirebaseAnalytics.Param.ITEM_NAME:
+                case FirebaseAnalytics.Param.ITEM_CATEGORY:
+                    params.putString(firebaseKey, Utils.getString(value));
+                    return;
+                case FirebaseAnalytics.Param.QUANTITY:
+                    if (Utils.isLong(value)) {
+                        params.putLong(firebaseKey, Utils.getLong(value));
+                    }
+                    return;
+                case FirebaseAnalytics.Param.PRICE:
+                    if (Utils.isDouble(value)) {
+                        params.putDouble(firebaseKey, Utils.getDouble(value));
+                    }
+                    return;
+                default:
+                    RudderLogger.logDebug("Product value is not of expected type");
+            }
+        }
+    }
+
+    // Handle product object of type ArrayList, JSONObject and LinkedHashMap
+    private JSONArray getProductsJSONArray(Object object) {
+        if (object == null) {
+            return null;
+        }
+        if (object instanceof JSONArray) {
+            return (JSONArray) object;
+        }
+        if (object instanceof List){
+            ArrayList<Object> arrayList = new ArrayList<>((Collection<?>) object);
+            return new JSONArray(arrayList);
+        }
+        if (object instanceof LinkedHashMap) {
+            LinkedHashMap product = (LinkedHashMap) object;
+            JSONObject productJsonObject = new JSONObject();
+            for (Object key: PRODUCT_PROPERTIES_MAPPING.keySet()) {
+                if (product.containsKey(key)) {
+                    try {
+                        productJsonObject.put((String) key, product.get(key));
+                    } catch (JSONException e) {
+                        RudderLogger.logDebug("Error while converting the Products value to JSONArray type");
+                    }
+                }
+            }
+            if (!Utils.isEmpty(productJsonObject)) {
+                return new JSONArray().put(productJsonObject);
+            }
+            return null;
+        }
+        try {
+            return new JSONArray((ArrayList) object);
+        } catch (Exception e) {
+            RudderLogger.logDebug("Error while converting the products: "+ object +" to JSONArray type");
+        }
+        return null;
+    }
+
     @Override
     public void reset() {
-        // Firebase doesn't support reset functionality
+        _firebaseAnalytics.setUserId(null);
+        RudderLogger.logDebug("Reset: _firebaseAnalytics.setUserId(null);");
     }
 
     @Override
