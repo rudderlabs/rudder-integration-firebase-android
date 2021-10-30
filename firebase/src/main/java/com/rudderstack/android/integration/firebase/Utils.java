@@ -49,30 +49,31 @@ public class Utils {
         }
     };
 
+    static final List<String> EVENT_WITH_PRODUCTS_ARRAY = Arrays.asList(
+            FirebaseAnalytics.Event.BEGIN_CHECKOUT,
+            FirebaseAnalytics.Event.PURCHASE,
+            FirebaseAnalytics.Event.REFUND,
+            FirebaseAnalytics.Event.VIEW_ITEM_LIST,
+            FirebaseAnalytics.Event.VIEW_CART
+    );
+
+    static final List<String> EVENT_WITH_PRODUCTS_AT_ROOT = Arrays.asList(
+            FirebaseAnalytics.Event.ADD_TO_CART,
+            FirebaseAnalytics.Event.ADD_TO_WISHLIST,
+            FirebaseAnalytics.Event.VIEW_ITEM,
+            FirebaseAnalytics.Event.REMOVE_FROM_CART
+    );
+
     static final Map<String, String> PRODUCT_PROPERTIES_MAPPING = new HashMap<String, String>() {
         {
             put("product_id", FirebaseAnalytics.Param.ITEM_ID);
-            put("id", FirebaseAnalytics.Param.ITEM_ID);
             put("name", FirebaseAnalytics.Param.ITEM_NAME);
             put("category", FirebaseAnalytics.Param.ITEM_CATEGORY);
             put("quantity", FirebaseAnalytics.Param.QUANTITY);
             put("price", FirebaseAnalytics.Param.PRICE);
         }
     };
-
-    static final List<String> EVENT_WITH_PRODUCTS = Arrays.asList(
-            FirebaseAnalytics.Event.ADD_PAYMENT_INFO,
-            FirebaseAnalytics.Event.ADD_TO_CART,
-            FirebaseAnalytics.Event.ADD_TO_WISHLIST,
-            FirebaseAnalytics.Event.BEGIN_CHECKOUT,
-            FirebaseAnalytics.Event.REMOVE_FROM_CART,
-            FirebaseAnalytics.Event.VIEW_ITEM,
-            FirebaseAnalytics.Event.VIEW_ITEM_LIST,
-            FirebaseAnalytics.Event.PURCHASE,
-            FirebaseAnalytics.Event.REFUND,
-            FirebaseAnalytics.Event.VIEW_CART
-    );
-
+    
     static final Map<String, String> ECOMMERCE_PROPERTY_MAPPING = new HashMap<String, String>() {
         {
             put("payment_method", FirebaseAnalytics.Param.PAYMENT_TYPE);

@@ -2,9 +2,10 @@ package com.rudderstack.android.integration.firebase;
 
 import static com.rudderstack.android.integration.firebase.Utils.ECOMMERCE_PROPERTY_MAPPING;
 import static com.rudderstack.android.integration.firebase.Utils.ECOMMERCE_EVENTS_MAPPING;
+import static com.rudderstack.android.integration.firebase.Utils.EVENT_WITH_PRODUCTS_ARRAY;
+import static com.rudderstack.android.integration.firebase.Utils.EVENT_WITH_PRODUCTS_AT_ROOT;
 import static com.rudderstack.android.integration.firebase.Utils.IDENTIFY_RESERVED_KEYWORDS;
 import static com.rudderstack.android.integration.firebase.Utils.PRODUCT_PROPERTIES_MAPPING;
-import static com.rudderstack.android.integration.firebase.Utils.EVENT_WITH_PRODUCTS;
 import static com.rudderstack.android.integration.firebase.Utils.TRACK_RESERVED_KEYWORDS;
 
 import android.os.Bundle;
@@ -155,23 +156,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         } else if (properties.containsKey("total") && !Utils.isEmpty(properties.get("total")) && Utils.isDouble(properties.get("total"))) {
             params.putDouble(FirebaseAnalytics.Param.VALUE, Utils.getDouble(properties.get("total")));
         }
-        // Handle Products array or Product at the root level for the allowed events
-        if (EVENT_WITH_PRODUCTS.contains(firebaseEvent)) {
-            /*
-            * For "Purchase" E-Commerce event in Firebase-Android send product
-            * at the root level i.e., no products array should be sent
-            * TODO: Handle Products array for "Purchase" E-Commerce event
-             */
-            if (firebaseEvent.equals(FirebaseAnalytics.Event.PURCHASE)) {
-                for (String key : PRODUCT_PROPERTIES_MAPPING.keySet()) {
-                    if (properties.containsKey(key)) {
-                        putProductValue(params, PRODUCT_PROPERTIES_MAPPING.get(key), properties.get(key));
-                    }
-                }
-            }
-            else {
-                handleProducts(params, properties);
-            }
+        if (EVENT_WITH_PRODUCTS_ARRAY.contains(firebaseEvent) && properties.containsKey(ECommerceParamNames.PRODUCTS)) {
+            handleProducts(params, properties, true);
+        }
+        if (EVENT_WITH_PRODUCTS_AT_ROOT.contains(firebaseEvent)) {
+            handleProducts(params, properties, false);
         }
         for (String propertyKey : properties.keySet()) {
             if (ECOMMERCE_PROPERTY_MAPPING.containsKey(propertyKey) && !Utils.isEmpty(properties.get(propertyKey))) {
@@ -192,9 +181,9 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         }
     }
 
-    private void handleProducts(Bundle params, Map<String, Object> properties) {
+    private void handleProducts(Bundle params, Map<String, Object> properties, boolean isProductsArray) {
         // If Products array is present
-        if (properties.containsKey(ECommerceParamNames.PRODUCTS)) {
+        if (isProductsArray) {
             JSONArray products = getProductsJSONArray(properties.get(ECommerceParamNames.PRODUCTS));
             if (!Utils.isEmpty(products)) {
                 ArrayList<Bundle> mappedProducts = new ArrayList<>();
