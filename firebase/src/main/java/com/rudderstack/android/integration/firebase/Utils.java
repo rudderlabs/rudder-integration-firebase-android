@@ -24,7 +24,7 @@ public class Utils {
     );
 
     static final List<String> TRACK_RESERVED_KEYWORDS = Arrays.asList (
-            "product_id", "name", "category", "quantity", "price", "currency", "value", "revenue", "total", "order_id",
+            "product_id", "name", "category", "quantity", "price", "currency", "value", "revenue", "total",
             "tax", "shipping", "coupon", "cart_id", "payment_method", "query", "list_id", "promotion_id", "creative",
             "affiliation", "share_via", ECommerceParamNames.PRODUCTS, FirebaseAnalytics.Param.SCREEN_NAME);
 
@@ -83,7 +83,6 @@ public class Utils {
             put("promotion_id", FirebaseAnalytics.Param.PROMOTION_ID);
             put("creative", FirebaseAnalytics.Param.CREATIVE_NAME);
             put("affiliation", FirebaseAnalytics.Param.AFFILIATION);
-            put("order_id", FirebaseAnalytics.Param.TRANSACTION_ID);
             put("share_via", FirebaseAnalytics.Param.METHOD);
         }
     };
