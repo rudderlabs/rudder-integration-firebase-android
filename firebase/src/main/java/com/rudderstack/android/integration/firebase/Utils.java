@@ -26,7 +26,7 @@ public class Utils {
     static final List<String> TRACK_RESERVED_KEYWORDS = Arrays.asList (
             "product_id", "name", "category", "quantity", "price", "currency", "value", "revenue", "total",
             "tax", "shipping", "coupon", "cart_id", "payment_method", "query", "list_id", "promotion_id", "creative",
-            "affiliation", "share_via", ECommerceParamNames.PRODUCTS, FirebaseAnalytics.Param.SCREEN_NAME);
+            "affiliation", "share_via", "order_id", ECommerceParamNames.PRODUCTS, FirebaseAnalytics.Param.SCREEN_NAME);
 
     static final Map<String, String> ECOMMERCE_EVENTS_MAPPING = new HashMap<String, String>() {
         {
