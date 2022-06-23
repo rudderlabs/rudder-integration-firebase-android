@@ -35,4 +35,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
 }
 
-apply from: './maven.gradle'
+ext {
+    PUBLISH_GROUP_ID = 'com.rudderstack.android.integration'
+    PUBLISH_VERSION = '2.0.2'
+    PUBLISH_ARTIFACT_ID = 'firebase'
+}
+
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
