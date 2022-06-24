@@ -5,10 +5,10 @@ android {
     compileSdkVersion 30
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 30
         versionCode 1
-        versionName "2.0.1"
+        versionName "2.0.2"
     }
 
     buildTypes {
@@ -22,8 +22,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-    compileOnly 'com.rudderstack.android.sdk:core:1.0.18'
-    compileOnly 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.rudderstack.android.sdk:core:[1.0,2.0)'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     testImplementation 'com.android.support.test:rules:1.0.2'
     testImplementation 'com.android.support.test:runner:1.0.2'
@@ -35,4 +35,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
 }
 
-apply from: './maven.gradle'
+ext {
+    PUBLISH_GROUP_ID = 'com.rudderstack.android.integration'
+    PUBLISH_VERSION = '2.0.2'
+    PUBLISH_ARTIFACT_ID = 'firebase'
+}
+
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
