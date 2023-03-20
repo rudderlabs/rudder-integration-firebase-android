@@ -46,6 +46,19 @@ val rudderClient: RudderClient = RudderClient.getInstance(
 )
 ```
 
+## Overriding `firebase-analytics` SDK Versions 
+In order to override the `firebase-analytics` dependency with a different version, you can use the code snippet provided below in the `build.gradle` file located at the root level of your project:
+
+> Warning: Using your own SDK versions is generally not recommended as it can lead to breaking changes in your application. Proceed with caution.
+
+```
+project.ext {
+    set("rudder-firebase", [
+            "firebase-bom": "32.3.0"
+    ])
+}
+```
+
 ## Sending Events
 
 Follow the steps from our [RudderStack Android SDK](https://github.com/rudderlabs/rudder-sdk-android#send-events) repo.

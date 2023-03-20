@@ -30,14 +30,19 @@ dependencies {
     testImplementation "org.mockito:mockito-core:4.0.0"
     testImplementation 'org.json:json:20220924'
 
-
     // RudderStack Android SDK
     implementation 'com.rudderstack.android.sdk:core:[1.7.0, 1.12.0]'
     // GSON
     implementation 'com.google.code.gson:gson:2.10.1'
 
+    // Access the rudderFirebase ext properties defined in the root build.gradle file
+    def firebaseBomVersion = "31.2.3"
+    if (rootProject.extensions.getByName("ext").properties?.get("rudder-firebase")?.getAt("firebase-bom")) {
+        firebaseBomVersion = rootProject.extensions.getByName("ext").properties?.get("rudder-firebase")?.getAt("firebase-bom")
+    }
+
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:31.2.3')
+    implementation platform('com.google.firebase:firebase-bom:$firebaseBomVersion')
     implementation 'com.google.firebase:firebase-analytics'
 }
 
