@@ -53,8 +53,9 @@ In order to override the `firebase-analytics` dependency with a different versio
 
 ```
 project.ext {
-    set("rudder-firebase", [
-            "firebase-bom": "32.3.0"
+    set("rudderstack", [
+            "rudder-android-sdk": "1.6.0",  // It'll override the rudder android sdk
+            "firebase-bom": "31.2.3"        // It'll override the firebase android sdk
     ])
 }
 ```
