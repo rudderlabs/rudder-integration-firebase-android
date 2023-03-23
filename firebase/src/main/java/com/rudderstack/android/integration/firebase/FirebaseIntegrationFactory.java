@@ -97,7 +97,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                         return;
                     }
                     if (eventName.equals("Application Opened")) {
-                        handleApplicationOpenedEvent();
+                        handleApplicationOpenedEvent(element.getProperties());
                     }
                     else if (ECOMMERCE_EVENTS_MAPPING.containsKey(eventName)) {
                         handleECommerceEvent(eventName, element.getProperties());
@@ -113,10 +113,10 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         }
     }
 
-    private void handleApplicationOpenedEvent() {
+    private void handleApplicationOpenedEvent(@Nullable Map<String, Object> properties) {
         String firebaseEvent = FirebaseAnalytics.Event.APP_OPEN;
         Bundle params = new Bundle();
-        makeFirebaseEvent(firebaseEvent, params, null);
+        makeFirebaseEvent(firebaseEvent, params, properties);
     }
 
     private void handleECommerceEvent(@NonNull String eventName, @Nullable Map<String, Object> properties) {
