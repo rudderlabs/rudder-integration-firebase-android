@@ -2,13 +2,11 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 30
-        versionCode 1
-        versionName "2.0.3"
+        targetSdkVersion 31
     }
 
     buildTypes {
@@ -17,6 +15,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'com.rudderstack.android.integration.firebase'
 }
 
 dependencies {
@@ -35,10 +34,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
 }
 
-ext {
-    PUBLISH_GROUP_ID = 'com.rudderstack.android.integration'
-    PUBLISH_VERSION = '2.0.3'
-    PUBLISH_ARTIFACT_ID = 'firebase'
-}
-
-apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
+apply from: rootProject.file('gradle/mvn-publish.gradle')
+apply from: rootProject.file('gradle/codecov.gradle')
