@@ -1,6 +1,8 @@
 package com.rudderstack.android.integration.firebase;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.rudderstack.android.sdk.core.RudderLogger;
 import com.rudderstack.android.sdk.core.ecomm.ECommerceEvents;
 import com.rudderstack.android.sdk.core.ecomm.ECommerceParamNames;
@@ -8,6 +10,7 @@ import com.rudderstack.android.sdk.core.ecomm.ECommerceParamNames;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,10 +48,6 @@ public class Utils {
             put(ECommerceEvents.CART_VIEWED, FirebaseAnalytics.Event.VIEW_CART);
         }
     };
-
-    static String getECommerceEventMapping(String eventName) {
-        return ECOMMERCE_EVENTS_MAPPING.get(eventName);
-    }
 
     static final List<String> EVENT_WITH_PRODUCTS_ARRAY = Arrays.asList(
             FirebaseAnalytics.Event.BEGIN_CHECKOUT,
@@ -121,31 +120,17 @@ public class Utils {
             case "Boolean":
             case "Character":
             case "ArrayList":
+            case "HashMap":
                 return object.toString();
             case "String":
                 return (String) object;
-            case "HashMap":
-            case "LinkedHashMap":
-                return mapToString((Map<?, ?>) object);
+            case "LinkedTreeMap":
+                return getStringFromLinkedTreeMap((LinkedTreeMap<String, Object>) object);
+            case "Array":
+                return new Gson().toJson(object);
             default:
                 return null;
         }
-    }
-
-    public static String mapToString(Map<?, ?> map) {
-        StringBuilder mapToString = new StringBuilder();
-        mapToString.append("{");
-        for (Map.Entry<?, ?> entry : map.entrySet()) {
-            mapToString.append(entry.getKey().toString())
-                    .append("=")
-                    .append(entry.getValue().toString())
-                    .append(", ");
-        }
-        if (map.size() > 0) {
-            mapToString.setLength(mapToString.length() - 2);
-        }
-        mapToString.append("}");
-        return mapToString.toString();
     }
 
     static String getType(Object object) {
@@ -219,6 +204,21 @@ public class Utils {
             }
         }
         return 0;
+    }
+
+    static String getStringFromLinkedTreeMap(LinkedTreeMap<String, Object> linkedTreeMap) {
+        if (linkedTreeMap.containsKey("values")) {
+            ArrayList<Object> arrayList = new ArrayList<>();
+            ArrayList<LinkedTreeMap> tempArrayList = (ArrayList<LinkedTreeMap>) linkedTreeMap.get("values");
+            for (LinkedTreeMap ltMap : tempArrayList) {
+                arrayList.add(ltMap.get("nameValuePairs"));
+            }
+            return arrayList.toString();
+        }
+        if (linkedTreeMap.containsKey("nameValuePairs")) {
+            return linkedTreeMap.get("nameValuePairs").toString();
+        }
+        return linkedTreeMap.toString();
     }
 
     public static boolean isEmpty(Object value) {

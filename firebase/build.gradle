@@ -21,23 +21,16 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
+    implementation 'com.rudderstack.android.sdk:core:[1.0,2.0)'
+    implementation 'com.google.code.gson:gson:2.8.6'
+
     testImplementation 'com.android.support.test:rules:1.0.2'
     testImplementation 'com.android.support.test:runner:1.0.2'
-    testImplementation "org.robolectric:robolectric:4.7.3"
-    testImplementation "androidx.test:core-ktx:1.5.0"
-
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation "org.mockito:mockito-core:4.0.0"
-    testImplementation 'org.json:json:20220924'
-    testImplementation "com.rudderstack.android.sdk:core:[1.7.0, 1.12.0]"
-
-    // RudderStack Android SDK
-    compileOnly 'com.rudderstack.android.sdk:core:[1.7.0, 1.12.0]'
-    // GSON
-    implementation 'com.google.code.gson:gson:2.10.1'
+    testImplementation "org.robolectric:robolectric:4.3"
+    testImplementation "androidx.test:core-ktx:1.3.0"
 
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:[31.2.3, 32.0)')
+    implementation platform('com.google.firebase:firebase-bom:28.4.2')
     implementation 'com.google.firebase:firebase-analytics'
 }
 
