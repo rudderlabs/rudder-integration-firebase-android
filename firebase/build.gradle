@@ -32,7 +32,7 @@ dependencies {
     testImplementation "com.rudderstack.android.sdk:core:[1.7.0, 1.12.0]"
 
     // RudderStack Android SDK
-    compileOnly 'com.rudderstack.android.sdk:core:[1.15.0, 2.0.0)'
+    compileOnly 'com.rudderstack.android.sdk:core:[1.17.0, 2.0.0)'
     // GSON
     implementation 'com.google.code.gson:gson:2.10.1'
 
