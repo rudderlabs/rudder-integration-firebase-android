@@ -1,7 +1,9 @@
 package com.rudderstack.android.sample.kotlin
 
 import android.os.Bundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.rudderstack.android.sdk.core.RudderClient
 import com.rudderstack.android.sdk.core.RudderProperty
 import com.rudderstack.android.sdk.core.RudderTraits
 import org.json.JSONArray
@@ -12,8 +14,36 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        identify()
-        sendECommerceCustomAndScreenEvents()
+
+        findViewById<Button>(R.id.track_all_ecommerce_events).setOnClickListener { sendECommerceCustomAndScreenEvents() }
+        findViewById<Button>(R.id.identify).setOnClickListener { (identify()) }
+
+        findViewById<Button>(R.id.checkoutStarted).setOnClickListener { checkoutStartedEvent() }
+        findViewById<Button>(R.id.orderCompleted).setOnClickListener { orderCompletedEvent() }
+        findViewById<Button>(R.id.orderRefunded).setOnClickListener { orderRefundedEvent() }
+        findViewById<Button>(R.id.productListViewed).setOnClickListener { productListViewedEvent() }
+        findViewById<Button>(R.id.cartView).setOnClickListener { cartViewEvent() }
+
+        findViewById<Button>(R.id.productAdded).setOnClickListener { productAddedEvent() }
+        findViewById<Button>(R.id.productAddedToWishlist).setOnClickListener { productAddedToWishlistEvent() }
+        findViewById<Button>(R.id.productViewed).setOnClickListener { productViewedEvent() }
+        findViewById<Button>(R.id.productRemoved).setOnClickListener { productRemovedEvent() }
+
+        findViewById<Button>(R.id.paymentInfoEntered).setOnClickListener { paymentInfoEnteredEvent() }
+        findViewById<Button>(R.id.productsSearched).setOnClickListener { productsSearchedEvent() }
+        findViewById<Button>(R.id.cartShared).setOnClickListener { cartSharedEvent() }
+        findViewById<Button>(R.id.productShared).setOnClickListener { productSharedEvent() }
+        findViewById<Button>(R.id.cartShared).setOnClickListener { cartSharedEvent() }
+        findViewById<Button>(R.id.productShared).setOnClickListener { productSharedEvent() }
+        findViewById<Button>(R.id.productClicked).setOnClickListener { productClickedEvent() }
+        findViewById<Button>(R.id.promotionViewed).setOnClickListener { promotionViewedEvent() }
+        findViewById<Button>(R.id.promotionClicked).setOnClickListener { promotionClickedEvent() }
+
+        findViewById<Button>(R.id.customTrackEventWithoutProperties).setOnClickListener { customTrackEventWithoutProperties() }
+        findViewById<Button>(R.id.customTrackEventWithProperties).setOnClickListener { customTrackEventWithProperties() }
+        findViewById<Button>(R.id.screenEventWithoutProperties).setOnClickListener { screenEventWithoutProperties() }
+        findViewById<Button>(R.id.screenEventWithProperties).setOnClickListener { screenEventWithProperties() }
+        findViewById<Button>(R.id.reset).setOnClickListener { RudderClient.getInstance()?.reset() }
     }
 
     private fun identify() {
@@ -100,11 +130,6 @@ class MainActivity : AppCompatActivity() {
         productClickedEvent()
         promotionViewedEvent()
         promotionClickedEvent()
-
-        customTrackEventWithoutProperties()
-        customTrackEventWithProperties()
-        screenEventWithoutProperties()
-        screenEventWithProperties()
     }
 
     // Events with multiple products array
@@ -301,13 +326,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun customTrackEventWithoutProperties() {
         MainApplication.rudderClient.track(
-            "Track Event 1"
+            "Track event without properties"
         )
     }
 
     private fun customTrackEventWithProperties() {
         MainApplication.rudderClient.track(
-            "Track Event 2",
+            "Track event with properties",
             getCustomProperties()
         )
     }
@@ -316,13 +341,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun screenEventWithoutProperties() {
         MainApplication.rudderClient.screen(
-            "MainActivity 1"
+            "Screen event without properties"
         )
     }
 
     private fun screenEventWithProperties() {
         MainApplication.rudderClient.screen(
-            "MainActivity 2",
+            "Screen event with properties",
             getCustomProperties()
         )
     }
