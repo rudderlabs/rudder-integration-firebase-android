@@ -16,9 +16,9 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
-        buildConfigField("String", "DATA_PLANE_URL", properties.getProperty('dataplaneUrl', 'https://api.rudderstack.com'))
+        buildConfigField("String", "DATA_PLANE_URL", properties.getProperty('dataplaneUrl', "\"https://hosted.rudderlabs.com\""))
         buildConfigField("String", "CONTROL_PLANE_URL", properties.getProperty('controlplaneUrl', "\"https://api.rudderstack.com\""))
-        buildConfigField("String", "WRITE_KEY", properties.getProperty('writeKey', ''))
+        buildConfigField("String", "WRITE_KEY", properties.getProperty('writeKey', "\"\""))
     }
     buildTypes {
         release {
