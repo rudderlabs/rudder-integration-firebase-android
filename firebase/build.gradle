@@ -21,16 +21,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-    testImplementation 'com.android.support.test:rules:1.0.2'
-    testImplementation 'com.android.support.test:runner:1.0.2'
-    testImplementation "org.robolectric:robolectric:4.7.3"
-    testImplementation "androidx.test:core-ktx:1.5.0"
-
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation "org.mockito:mockito-core:4.0.0"
-    testImplementation 'org.json:json:20220924'
-    testImplementation "com.rudderstack.android.sdk:core:[1.7.0, 1.12.0]"
-
     // RudderStack Android SDK
     compileOnly 'com.rudderstack.android.sdk:core:[1.17.0, 2.0.0)'
     // GSON
