@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.customTrackEventWithProperties).setOnClickListener { customTrackEventWithProperties() }
         findViewById<Button>(R.id.screenEventWithoutProperties).setOnClickListener { screenEventWithoutProperties() }
         findViewById<Button>(R.id.screenEventWithProperties).setOnClickListener { screenEventWithProperties() }
-        findViewById<Button>(R.id.reset).setOnClickListener { RudderClient.getInstance()?.reset() }
+        findViewById<Button>(R.id.reset).setOnClickListener { RudderClient.getInstance()?.reset(false) }
     }
 
     private fun identify() {
