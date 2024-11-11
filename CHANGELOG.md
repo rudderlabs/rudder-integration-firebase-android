@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.2.0 (2024-11-05)
+
+
+### Features
+
+* bump the firebase SDK to v22.1.2 ([6f5ce14](https://github.com/rudderlabs/rudder-integration-firebase-android/commit/6f5ce14ede5205acc6442bce594c8e7092e4f42d))
+
 ## [3.1.0](https://github.com/rudderlabs/rudder-integration-firebase-android/compare/v3.0.0...v3.1.0) (2023-08-11)
 
 

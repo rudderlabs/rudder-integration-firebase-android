@@ -11,7 +11,7 @@ android {
     compileSdk 33
     defaultConfig {
         applicationId "com.rudderstack.integration.test.firebase.android"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 33
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
