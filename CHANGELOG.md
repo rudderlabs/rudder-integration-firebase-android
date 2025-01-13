@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* replace hyphen with underscore in event names and properties, and traits ([003f5af](https://github.com/rudderlabs/rudder-integration-firebase-android/commit/003f5af922dd208d2b0b84079d8d83774c075d33))
+* replace hyphen (`-`) with underscore (`_`) present in the event name and its properties, and also in the identify event traits ([003f5af](https://github.com/rudderlabs/rudder-integration-firebase-android/commit/003f5af922dd208d2b0b84079d8d83774c075d33))
 
 ## 3.2.0 (2024-11-05)
 
