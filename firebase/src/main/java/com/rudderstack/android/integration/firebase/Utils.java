@@ -100,7 +100,7 @@ public class Utils {
     }
 
     static String getTrimKey(String key) {
-        String firebaseEvent = key.toLowerCase().trim().replace(" ", "_");
+        String firebaseEvent = key.toLowerCase().trim().replace(" ", "_").replace("-", "_");
         if (firebaseEvent.length() > 40) {
             firebaseEvent = firebaseEvent.substring(0, 40);
         }

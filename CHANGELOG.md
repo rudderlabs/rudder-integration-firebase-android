@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.3.0](https://github.com/rudderlabs/rudder-integration-firebase-android/compare/v3.2.0...v3.3.0) (2025-01-13)
+
+
+### Features
+
+* replace hyphen (`-`) with underscore (`_`) present in the event name and its properties, and also in the identify event traits ([003f5af](https://github.com/rudderlabs/rudder-integration-firebase-android/commit/003f5af922dd208d2b0b84079d8d83774c075d33))
+
 ## 3.2.0 (2024-11-05)
 
 

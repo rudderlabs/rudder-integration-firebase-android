@@ -107,6 +107,7 @@ class MainActivity : AppCompatActivity() {
         // Inserting Array types into Traits
         traits.put("intArr", arr)
         traits.put("justArr", justArr)
+        traits.put("key-with-hyphen", "value with hyphen")
         // Inserting Object Types into Traits
         MainApplication.rudderClient.identify("user_id_4", traits, null)
     }
@@ -335,6 +336,11 @@ class MainActivity : AppCompatActivity() {
             "Track event with properties",
             getCustomProperties()
         )
+
+        MainApplication.rudderClient.track(
+            "Track-event-with-hyphen",
+            getCustomProperties()
+        )
     }
 
     // Screen events
@@ -350,6 +356,11 @@ class MainActivity : AppCompatActivity() {
             "Screen event with properties",
             getCustomProperties()
         )
+
+        MainApplication.rudderClient.track(
+            "Screen-event-with-hyphen",
+            getCustomProperties()
+        )
     }
 
     private fun getCustomProperties(): RudderProperty =
@@ -359,4 +370,5 @@ class MainActivity : AppCompatActivity() {
             .putValue("key2", 100)
             .putValue("key3", 200.25)
             .putValue("key4", true)
+            .putValue("key-with-hyphen", "value with hyphen")
 }
