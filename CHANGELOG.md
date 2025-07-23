@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.4.0](https://github.com/rudderlabs/rudder-integration-firebase-android/compare/v3.3.0...v3.4.0) (2025-07-23)
+
+
+### Features
+
+* update firebase bom version to 33.16.0 ([#36](https://github.com/rudderlabs/rudder-integration-firebase-android/issues/36)) ([2e5874a](https://github.com/rudderlabs/rudder-integration-firebase-android/commit/2e5874a0a5e584efbb951ddcc7d5108ca4d15e96))
+
 ## [3.3.0](https://github.com/rudderlabs/rudder-integration-firebase-android/compare/v3.2.0...v3.3.0) (2025-01-13)
 
 
