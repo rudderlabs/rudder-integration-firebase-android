@@ -239,42 +239,4 @@ public class Utils {
         }
         return false;
     }
-
-    static void attachProperties(android.os.Bundle params, Map<String, Object> properties, boolean filterReservedKeywords) {
-        if (isEmpty(properties)) {
-            return;
-        }
-        for (String key : properties.keySet()) {
-            String firebaseKey = getTrimKey(key);
-            Object value = properties.get(key);
-            if (isEmpty(value) || (filterReservedKeywords && TRACK_RESERVED_KEYWORDS.contains(firebaseKey))) {
-                continue;
-            }
-            addPropertyToBundle(params, firebaseKey, value);
-        }
-    }
-
-    /**
-     * Helper method to add property to bundle with appropriate type conversion
-     */
-    private static void addPropertyToBundle(android.os.Bundle params, String firebaseKey, Object value) {
-        if (value instanceof String) {
-            String val = (String) value;
-            if (val.length() > 100) val = val.substring(0, 100);
-            params.putString(firebaseKey, val);
-        } else if (value instanceof Integer) {
-            params.putInt(firebaseKey, (Integer) value);
-        } else if (value instanceof Long) {
-            params.putLong(firebaseKey, (Long) value);
-        } else if (value instanceof Double) {
-            params.putDouble(firebaseKey, (Double) value);
-        } else if (value instanceof Boolean) {
-            params.putBoolean(firebaseKey, (Boolean) value);
-        } else {
-            com.google.gson.Gson gson = new com.google.gson.Gson();
-            String val = gson.toJson(value);
-            // if length exceeds 100, don't send the property
-            if (!(val.length() > 100)) params.putString(firebaseKey, val);
-        }
-    }
 }
