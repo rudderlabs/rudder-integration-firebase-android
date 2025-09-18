@@ -87,7 +87,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                     }
                     Bundle params = new Bundle();
                     params.putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName);
-                    attachAllCustomProperties(params, element.getProperties());
+                    Utils.attachPropertiesForCustomEvents(params, element.getProperties());
                     _firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, params);
                     break;
                 case MessageType.TRACK:
@@ -158,11 +158,14 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     private void handleCustomEvent(@NonNull String eventName, @Nullable Map<String, Object> properties) {
         Bundle params = new Bundle();
         String firebaseEvent = Utils.getTrimKey(eventName);
-        makeFirebaseEvent(firebaseEvent, params, properties);
+        // Use property attachment without reserved keyword validation for custom events
+        Utils.attachPropertiesForCustomEvents(params, properties);
+        RudderLogger.logDebug("Logged \"" + firebaseEvent + "\" to Firebase and properties: " + properties);
+        _firebaseAnalytics.logEvent(firebaseEvent, params);
     }
 
     private void makeFirebaseEvent(@NonNull String firebaseEvent, @NonNull Bundle params, @Nullable Map<String, Object> properties) {
-        attachAllCustomProperties(params, properties);
+        Utils.attachPropertiesForStandardEvents(params, properties);
         RudderLogger.logDebug("Logged \"" + firebaseEvent + "\" to Firebase and properties: " + properties);
         _firebaseAnalytics.logEvent(firebaseEvent, params);
     }
@@ -246,36 +249,6 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
             }
             if (!productBundle.isEmpty()) {
                 params.putParcelableArray(FirebaseAnalytics.Param.ITEMS, new Bundle[]{productBundle});
-            }
-        }
-    }
-
-    private void attachAllCustomProperties(@NonNull Bundle params, @Nullable Map<String, Object> properties) {
-        if (Utils.isEmpty(properties)) {
-            return;
-        }
-        for (String key : properties.keySet()) {
-            String firebaseKey = Utils.getTrimKey(key);
-            Object value = properties.get(key);
-            if (TRACK_RESERVED_KEYWORDS.contains(firebaseKey) || Utils.isEmpty(value)) {
-                continue;
-            }
-            if (value instanceof String) {
-                String val = (String) value;
-                if (val.length() > 100) val = val.substring(0, 100);
-                params.putString(firebaseKey, val);
-            } else if (value instanceof Integer) {
-                params.putInt(firebaseKey, (Integer) value);
-            } else if (value instanceof Long) {
-                params.putLong(firebaseKey, (Long) value);
-            } else if (value instanceof Double) {
-                params.putDouble(firebaseKey, (Double) value);
-            } else if (value instanceof Boolean) {
-                params.putBoolean(firebaseKey, (Boolean) value);
-            } else {
-                String val = new Gson().toJson(value);
-                // if length exceeds 100, don't send the property
-                if (!(val.length() > 100)) params.putString(firebaseKey, val);
             }
         }
     }
