@@ -240,34 +240,14 @@ public class Utils {
         return false;
     }
 
-    /**
-     * Attach properties for standard events (e-commerce, application opened) with reserved keyword filtering
-     */
-    static void attachPropertiesForStandardEvents(android.os.Bundle params, Map<String, Object> properties) {
+    static void attachProperties(android.os.Bundle params, Map<String, Object> properties, boolean filterReservedKeywords) {
         if (isEmpty(properties)) {
             return;
         }
         for (String key : properties.keySet()) {
             String firebaseKey = getTrimKey(key);
             Object value = properties.get(key);
-            if (TRACK_RESERVED_KEYWORDS.contains(firebaseKey) || isEmpty(value)) {
-                continue;
-            }
-            addPropertyToBundle(params, firebaseKey, value);
-        }
-    }
-
-    /**
-     * Attach properties for custom events and screen events without reserved keyword filtering
-     */
-    static void attachPropertiesForCustomEvents(android.os.Bundle params, Map<String, Object> properties) {
-        if (isEmpty(properties)) {
-            return;
-        }
-        for (String key : properties.keySet()) {
-            String firebaseKey = getTrimKey(key);
-            Object value = properties.get(key);
-            if (isEmpty(value)) {
+            if (isEmpty(value) || (filterReservedKeywords && TRACK_RESERVED_KEYWORDS.contains(firebaseKey))) {
                 continue;
             }
             addPropertyToBundle(params, firebaseKey, value);

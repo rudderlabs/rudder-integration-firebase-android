@@ -6,7 +6,6 @@ import static com.rudderstack.android.integration.firebase.Utils.EVENT_WITH_PROD
 import static com.rudderstack.android.integration.firebase.Utils.EVENT_WITH_PRODUCTS_AT_ROOT;
 import static com.rudderstack.android.integration.firebase.Utils.IDENTIFY_RESERVED_KEYWORDS;
 import static com.rudderstack.android.integration.firebase.Utils.PRODUCT_PROPERTIES_MAPPING;
-import static com.rudderstack.android.integration.firebase.Utils.TRACK_RESERVED_KEYWORDS;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.gson.Gson;
 import com.rudderstack.android.sdk.core.MessageType;
 import com.rudderstack.android.sdk.core.RudderClient;
 import com.rudderstack.android.sdk.core.RudderConfig;
@@ -87,7 +85,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                     }
                     Bundle params = new Bundle();
                     params.putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName);
-                    Utils.attachPropertiesForCustomEvents(params, element.getProperties());
+                    Utils.attachProperties(params, element.getProperties(), false);
                     _firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, params);
                     break;
                 case MessageType.TRACK:
@@ -116,7 +114,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     private void handleApplicationOpenedEvent(@Nullable Map<String, Object> properties) {
         String firebaseEvent = FirebaseAnalytics.Event.APP_OPEN;
         Bundle params = new Bundle();
-        makeFirebaseEvent(firebaseEvent, params, properties);
+        makeFirebaseEvent(firebaseEvent, params, properties, true);
     }
 
     private void handleECommerceEvent(@NonNull String eventName, @Nullable Map<String, Object> properties) {
@@ -144,7 +142,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
             addConstantParamsForECommerceEvent(params, eventName);
             handleECommerceEventProperties(params, properties, firebaseEvent);
         }
-        makeFirebaseEvent(firebaseEvent, params, properties);
+        makeFirebaseEvent(firebaseEvent, params, properties, true);
     }
 
     private void addConstantParamsForECommerceEvent(Bundle params, String eventName) {
@@ -158,14 +156,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     private void handleCustomEvent(@NonNull String eventName, @Nullable Map<String, Object> properties) {
         Bundle params = new Bundle();
         String firebaseEvent = Utils.getTrimKey(eventName);
-        // Use property attachment without reserved keyword validation for custom events
-        Utils.attachPropertiesForCustomEvents(params, properties);
-        RudderLogger.logDebug("Logged \"" + firebaseEvent + "\" to Firebase and properties: " + properties);
-        _firebaseAnalytics.logEvent(firebaseEvent, params);
+        makeFirebaseEvent(firebaseEvent, params, properties, false);
     }
 
-    private void makeFirebaseEvent(@NonNull String firebaseEvent, @NonNull Bundle params, @Nullable Map<String, Object> properties) {
-        Utils.attachPropertiesForStandardEvents(params, properties);
+    private void makeFirebaseEvent(@NonNull String firebaseEvent, @NonNull Bundle params, @Nullable Map<String, Object> properties, boolean filterReservedKeywords) {
+        Utils.attachProperties(params, properties, filterReservedKeywords);
         RudderLogger.logDebug("Logged \"" + firebaseEvent + "\" to Firebase and properties: " + properties);
         _firebaseAnalytics.logEvent(firebaseEvent, params);
     }
