@@ -116,7 +116,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     private void handleApplicationOpenedEvent(@Nullable Map<String, Object> properties) {
         String firebaseEvent = FirebaseAnalytics.Event.APP_OPEN;
         Bundle params = new Bundle();
-        makeFirebaseEvent(firebaseEvent, params, properties, true);
+        makeFirebaseEvent(firebaseEvent, params, properties, false);
     }
 
     private void handleECommerceEvent(@NonNull String eventName, @Nullable Map<String, Object> properties) {
@@ -161,8 +161,8 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         makeFirebaseEvent(firebaseEvent, params, properties, false);
     }
 
-    private void makeFirebaseEvent(@NonNull String firebaseEvent, @NonNull Bundle params, @Nullable Map<String, Object> properties, boolean filterReservedKeywords) {
-        attachAllCustomProperties(params, properties, filterReservedKeywords);
+    private void makeFirebaseEvent(@NonNull String firebaseEvent, @NonNull Bundle params, @Nullable Map<String, Object> properties, boolean isEcommerceEvent) {
+        attachAllCustomProperties(params, properties, isEcommerceEvent);
         RudderLogger.logDebug("Logged \"" + firebaseEvent + "\" to Firebase and properties: " + properties);
         _firebaseAnalytics.logEvent(firebaseEvent, params);
     }
@@ -250,14 +250,14 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         }
     }
 
-    private void attachAllCustomProperties(@NonNull Bundle params, @Nullable Map<String, Object> properties, boolean filterReservedKeywords) {
+    private void attachAllCustomProperties(@NonNull Bundle params, @Nullable Map<String, Object> properties, boolean isEcommerceEvent) {
         if (Utils.isEmpty(properties)) {
             return;
         }
         for (String key : properties.keySet()) {
             String firebaseKey = Utils.getTrimKey(key);
             Object value = properties.get(key);
-            if ((filterReservedKeywords && TRACK_RESERVED_KEYWORDS.contains(firebaseKey)) || Utils.isEmpty(value)) {
+            if ((isEcommerceEvent && TRACK_RESERVED_KEYWORDS.contains(firebaseKey)) || Utils.isEmpty(value)) {
                 continue;
             }
             if (value instanceof String) {
