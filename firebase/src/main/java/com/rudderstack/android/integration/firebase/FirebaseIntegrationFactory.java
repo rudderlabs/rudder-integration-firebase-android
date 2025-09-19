@@ -87,7 +87,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
                     }
                     Bundle params = new Bundle();
                     params.putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName);
-                    attachAllCustomProperties(params, element.getProperties());
+                    attachAllCustomProperties(params, element.getProperties(), false);
                     _firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, params);
                     break;
                 case MessageType.TRACK:
@@ -116,7 +116,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     private void handleApplicationOpenedEvent(@Nullable Map<String, Object> properties) {
         String firebaseEvent = FirebaseAnalytics.Event.APP_OPEN;
         Bundle params = new Bundle();
-        makeFirebaseEvent(firebaseEvent, params, properties);
+        makeFirebaseEvent(firebaseEvent, params, properties, false);
     }
 
     private void handleECommerceEvent(@NonNull String eventName, @Nullable Map<String, Object> properties) {
@@ -144,7 +144,7 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
             addConstantParamsForECommerceEvent(params, eventName);
             handleECommerceEventProperties(params, properties, firebaseEvent);
         }
-        makeFirebaseEvent(firebaseEvent, params, properties);
+        makeFirebaseEvent(firebaseEvent, params, properties, true);
     }
 
     private void addConstantParamsForECommerceEvent(Bundle params, String eventName) {
@@ -158,11 +158,11 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
     private void handleCustomEvent(@NonNull String eventName, @Nullable Map<String, Object> properties) {
         Bundle params = new Bundle();
         String firebaseEvent = Utils.getTrimKey(eventName);
-        makeFirebaseEvent(firebaseEvent, params, properties);
+        makeFirebaseEvent(firebaseEvent, params, properties, false);
     }
 
-    private void makeFirebaseEvent(@NonNull String firebaseEvent, @NonNull Bundle params, @Nullable Map<String, Object> properties) {
-        attachAllCustomProperties(params, properties);
+    private void makeFirebaseEvent(@NonNull String firebaseEvent, @NonNull Bundle params, @Nullable Map<String, Object> properties, boolean isEcommerceEvent) {
+        attachAllCustomProperties(params, properties, isEcommerceEvent);
         RudderLogger.logDebug("Logged \"" + firebaseEvent + "\" to Firebase and properties: " + properties);
         _firebaseAnalytics.logEvent(firebaseEvent, params);
     }
@@ -250,14 +250,14 @@ public class FirebaseIntegrationFactory extends RudderIntegration<FirebaseAnalyt
         }
     }
 
-    private void attachAllCustomProperties(@NonNull Bundle params, @Nullable Map<String, Object> properties) {
+    private void attachAllCustomProperties(@NonNull Bundle params, @Nullable Map<String, Object> properties, boolean isEcommerceEvent) {
         if (Utils.isEmpty(properties)) {
             return;
         }
         for (String key : properties.keySet()) {
             String firebaseKey = Utils.getTrimKey(key);
             Object value = properties.get(key);
-            if (TRACK_RESERVED_KEYWORDS.contains(firebaseKey) || Utils.isEmpty(value)) {
+            if ((isEcommerceEvent && TRACK_RESERVED_KEYWORDS.contains(firebaseKey)) || Utils.isEmpty(value)) {
                 continue;
             }
             if (value instanceof String) {
