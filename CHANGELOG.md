@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.5.0 (2025-09-22)
+
+
+### Features
+
+* remove Firebase reserved keyword filtering for custom events and screen events ([#43](https://github.com/rudderlabs/rudder-integration-firebase-android/issues/43)) ([c16003e](https://github.com/rudderlabs/rudder-integration-firebase-android/commit/c16003e772588800c6cba72e9a150847e6864bf3))
+
 ## [3.4.0](https://github.com/rudderlabs/rudder-integration-firebase-android/compare/v3.3.0...v3.4.0) (2025-07-24)
 
 
