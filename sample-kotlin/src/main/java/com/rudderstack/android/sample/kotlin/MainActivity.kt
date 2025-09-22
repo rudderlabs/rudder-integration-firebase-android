@@ -371,4 +371,6 @@ class MainActivity : AppCompatActivity() {
             .putValue("key3", 200.25)
             .putValue("key4", true)
             .putValue("key-with-hyphen", "value with hyphen")
+            .putValue("currency", "INR")
+            .putValue("value", 105)
 }
