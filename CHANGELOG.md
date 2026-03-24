@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.6.0 (2026-03-24)
+
+
+### Features
+
+* update minimum version of firebase to 34.11.0 ([#51](https://github.com/rudderlabs/rudder-integration-firebase-android/issues/51)) ([17c487b](https://github.com/rudderlabs/rudder-integration-firebase-android/commit/17c487bd239492d5aad6ded6ec88e86cd013bd29))
+
 ## 3.5.0 (2025-09-22)
 
 
