@@ -9,6 +9,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 * update minimum version of firebase to 34.11.0 ([#51](https://github.com/rudderlabs/rudder-integration-firebase-android/issues/51)) ([17c487b](https://github.com/rudderlabs/rudder-integration-firebase-android/commit/17c487bd239492d5aad6ded6ec88e86cd013bd29))
 
+### Bug Fixes
+
+* fix firebase-bom version range to use fixed version for platform() compatibility
+* add members:read permission to resolve team reviewers in draft release action
+
 ## 3.5.0 (2025-09-22)
 
 
