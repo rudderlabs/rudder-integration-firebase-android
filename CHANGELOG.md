@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.6.0](https://github.com/rudderlabs/rudder-integration-firebase-android/compare/v3.5.0...v3.6.0) (2026-03-25)
+
+
+### Features
+
+* update minimum version of firebase to 34.11.0 ([#51](https://github.com/rudderlabs/rudder-integration-firebase-android/issues/51)) ([17c487b](https://github.com/rudderlabs/rudder-integration-firebase-android/commit/17c487bd239492d5aad6ded6ec88e86cd013bd29))
+
+
+### Bug Fixes
+
+* pin firebase-bom version and update AGP/Kotlin ([#56](https://github.com/rudderlabs/rudder-integration-firebase-android/issues/56)) ([699aa98](https://github.com/rudderlabs/rudder-integration-firebase-android/commit/699aa98c49fd30e248e14a9b082a66a35075825d))
+
 ## 3.5.0 (2025-09-22)
 
 
